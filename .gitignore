@@ -1,3 +1,5 @@
 .vscode
 .venv
 *.pyc
+
+generated_test_models/*
