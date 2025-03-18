@@ -36,7 +36,7 @@ def preprocess_image(image_path):
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
     image = Image.open(image_path).convert("RGB")
-    return transform(image).unsqueeze(0)
+    return transform(image)
 
 
 if __name__ == "__main__":
@@ -48,6 +48,8 @@ if __name__ == "__main__":
     # Test a new image
     detector = StripDetector(model=model, clean_samples=clean_images)
 
-    image_path = input("Enter test image path: ")
-    image = preprocess_image(image_path)
-    detector.detect(image)
+    while True:
+        image_path = input("Enter test image path: ")
+        if image_path == "exit": break
+        image = preprocess_image(image_path)
+        detector.detect(image)

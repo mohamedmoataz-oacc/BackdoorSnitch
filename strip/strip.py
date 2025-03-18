@@ -21,7 +21,7 @@ class StripDetector():
         """Compute entropy of a probability distribution."""
         return -torch.sum(probabilities * torch.log(probabilities + 1e-10), dim=1)
 
-    def strip_defense(self, input_tensor, num_perturbations=10, noise_level=0.05):
+    def strip_defense(self, input_tensor, num_perturbations=64, noise_level=0.25, po=False):
         """Apply STRIP defense by perturbing input and measuring entropy of predictions."""
         self.model.eval()
         perturbed_inputs = torch.stack([
@@ -32,13 +32,14 @@ class StripDetector():
         with torch.no_grad():
             outputs = self.model(perturbed_inputs.view(-1, *input_tensor.shape[1:]))
             probabilities = F.softmax(outputs, dim=1)
+            if po: print("Predicted classes:", torch.argmax(probabilities, dim=1))
 
             avg_entropy = self.compute_entropy(probabilities).mean().item()
 
         return avg_entropy
 
     def compute_dynamic_threshold(
-        self, clean_samples, num_perturbations=100, noise_level=0.2, alpha=1.0
+        self, clean_samples, num_perturbations=64, noise_level=0.25, alpha=0.5
     ):
         """Compute dynamic threshold based on mean and std deviation of clean sample entropy."""
 
@@ -55,7 +56,7 @@ class StripDetector():
         return threshold
     
     def detect(self, sample_input):
-        entropy_score = self.strip_defense(sample_input)
+        entropy_score = self.strip_defense(sample_input.unsqueeze(0), po=True)
         print(f"Entropy Score: {entropy_score}")
 
         if entropy_score < self.threshold:
