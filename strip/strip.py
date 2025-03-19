@@ -1,79 +1,102 @@
 import torch
-from tqdm import tqdm
-import torch.nn.functional as F
+import numpy as np
 import torchvision.models as models
+from torchvision import transforms
+from PIL import Image
 
 
-class StripDetector():
-    def __init__(self, model, clean_samples):
-        self.model = model
+class STRIPDetector:
+    def __init__(self, model_path, clean_image_paths):
+        self.model = self.load_model(model_path)
+        if self.model is None:
+            raise ValueError("Failed to load model")
 
-        # Compute dynamic threshold
-        self.threshold = self.compute_dynamic_threshold(clean_samples)
-        print(f"Dynamic Entropy Threshold: {self.threshold}")
+        self.clean_images = [self.preprocess_image(img_path) for img_path in clean_image_paths]
+        self.clean_images = [img for img in self.clean_images if img is not None]
 
-    def perturb_input(self, input_tensor, noise_level=0.1):
-        """Apply perturbations to the input by adding random noise."""
-        noise = torch.randn_like(input_tensor) * noise_level
-        return input_tensor + noise
+        if len(self.clean_images) < 2:
+            raise ValueError("Not enough valid clean images loaded.")
+
+        self.min_entropy, self.max_entropy, self.std_entropy = self.compute_min_max_entropy()
+
+    def load_model(self, path):
+        try:
+            checkpoint = torch.load(path, map_location="cpu", weights_only=False)
+            model_name = checkpoint.get("model_name", "convnext_tiny")
+            num_classes = checkpoint.get("num_classes", 10)
+            model_weights = checkpoint.get("model")
+
+            if model_name == "convnext_tiny":
+                model = models.convnext_tiny(weights=None)
+                model.classifier[2] = torch.nn.Linear(768, num_classes)
+            else:
+                raise ValueError(f"Unknown model type: {model_name}")
+
+            model.load_state_dict(model_weights)
+            model.eval()
+            print(f"Model {model_name} loaded successfully!")
+            return model
+        except Exception as e:
+            print(f"Error loading model: {e}")
+            return None
+
+    def preprocess_image(self, image_path):
+        transform = transforms.Compose([
+            transforms.Resize((32, 32)),
+            transforms.ToTensor()
+        ])
+        try:
+            image = Image.open(image_path).convert("RGB")
+            return transform(image).unsqueeze(0)
+        except Exception as e:
+            print(f"Error loading image {image_path}: {e}")
+            return None
 
     def compute_entropy(self, probabilities):
-        """Compute entropy of a probability distribution."""
-        return -torch.sum(probabilities * torch.log(probabilities + 1e-10), dim=1)
+        log_probs = torch.log2(probabilities + 1e-9)
+        return -torch.sum(probabilities * log_probs, dim=1)
 
-    def strip_defense(self, input_tensor, num_perturbations=64, noise_level=0.25, po=False):
-        """Apply STRIP defense by perturbing input and measuring entropy of predictions."""
-        self.model.eval()
-        perturbed_inputs = torch.stack([
-            self.perturb_input(input_tensor, noise_level)
-            for _ in range(num_perturbations)
-        ])
+    def compute_min_max_entropy(self):
+        entropies = []
+        with torch.no_grad():
+            for img in self.clean_images:
+                probabilities = torch.nn.functional.softmax(self.model(img), dim=1)
+                entropies.append(self.compute_entropy(probabilities).item())
+        min_entropy, max_entropy, std_entropy = min(entropies), max(entropies), np.std(entropies)
+        print(f"Entropies: {entropies}")
+        print(f"Min Entropy: {min_entropy}, Max Entropy: {max_entropy}, Std Dev: {std_entropy}")
+        return min_entropy, max_entropy, std_entropy
+
+    def detect_trojan(self, image_path):
+        image = self.preprocess_image(image_path)
+        if image is None:
+            print("Error: Failed to process test image.")
+            return
 
         with torch.no_grad():
-            outputs = self.model(perturbed_inputs.view(-1, *input_tensor.shape[1:]))
-            probabilities = F.softmax(outputs, dim=1)
-            if po: print("Predicted classes:", torch.argmax(probabilities, dim=1))
+            probabilities = torch.nn.functional.softmax(self.model(image), dim=1)
+            entropy = self.compute_entropy(probabilities).item()
+        print(f"Test Image Entropy: {entropy}")
 
-            avg_entropy = self.compute_entropy(probabilities).mean().item()
-
-        return avg_entropy
-
-    def compute_dynamic_threshold(
-        self, clean_samples, num_perturbations=64, noise_level=0.25, alpha=0.5
-    ):
-        """Compute dynamic threshold based on mean and std deviation of clean sample entropy."""
-
-        entropy_values = []
-        for sample in tqdm(clean_samples):
-            entropy_values.append(
-                self.strip_defense(sample.unsqueeze(0), num_perturbations, noise_level)
-            )
-
-        mean_entropy = sum(entropy_values) / len(entropy_values)
-        std_entropy = (sum((x - mean_entropy) ** 2 for x in entropy_values) / len(entropy_values)) ** 0.5
-
-        threshold = mean_entropy - alpha * std_entropy
-        return threshold
-    
-    def detect(self, sample_input):
-        entropy_score = self.strip_defense(sample_input.unsqueeze(0), po=True)
-        print(f"Entropy Score: {entropy_score}")
-
-        if entropy_score < self.threshold:
-            print("Warning: Potential Trojan attack detected!")
-            return True
+        if entropy < (self.min_entropy * 0.8) or entropy > (self.max_entropy * 1.2):
+            print("Trojaned Input Detected!")
         else:
-            print("Input is likely clean.")
-            return False
+            print("Input is Clean")
+
 
 if __name__ == "__main__":
-    #model = timm.create_model('efficientnet_b3a', pretrained=True)
-    #model = models.resnet50(pretrained=True)
-    model = torch.hub.load('chenyaofo/pytorch-cifar-models', 'cifar10_resnet20', pretrained=True)
-    model.eval()
+    model_path = "attack_result.pt"
+    clean_image_paths = [
+        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat2.png",
+        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat3.png",
+        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat4.png",
+        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat5.png",
+        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat6.png",
+        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat7.png",
+        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat8.png",
+        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat9.png",
+    ]
 
-    clean_samples = [torch.randn(3, 32, 32) for _ in range(20)]
-    sample_input = torch.randn(1, 3, 32, 32)
-
-    detector = StripDetector(model, clean_samples)
-    detector.detect(sample_input)
+    detector = STRIPDetector(model_path, clean_image_paths)
+    test_image_path = "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/bd_test_dataset/1/3029.png"
+    detector.detect_trojan(test_image_path)
