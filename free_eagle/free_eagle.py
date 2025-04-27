@@ -9,6 +9,7 @@ import torch
 from torch import nn
 import torch.optim as optim
 from onnx2torch import convert
+from torch.nn import functional as F
 
 
 class FreeEagleDetector(BackdoorDetector):
@@ -46,10 +47,11 @@ class FreeEagleDetector(BackdoorDetector):
         # optimized_IRc = irc
         return optimized_IRc.detach().cpu().numpy()
     
-    def generate_posteriors_matrix(self, intermediate_representations):
+    def generate_posteriors_matrix(self, intermediate_representations, wsm=False):
         mat_p = []
         for representation in intermediate_representations:
             output = self.session.run(None, {self.session.get_inputs()[0].name: representation})[0]
+            if wsm: output = F.softmax(torch.tensor(output), dim=1).numpy()
             mat_p.append(output)
         mat_p = np.array(mat_p).transpose()
         return mat_p
@@ -65,12 +67,21 @@ class FreeEagleDetector(BackdoorDetector):
         
         # Compute the  the posteriors matrix. (line 7 in FreeEagle algorithm)
         self.mat_p = np.squeeze(self.generate_posteriors_matrix(representations))
+        self.mat_p_wsm = np.squeeze(self.generate_posteriors_matrix(representations, wsm=True))
 
         # Posterior Outlier Detection and Anomaly Metric Computation (lines 8-13 in FreeEagle algorithm)
         np.fill_diagonal(self.mat_p, 0)
+        np.fill_diagonal(self.mat_p_wsm, 0)
         self.v = np.mean(self.mat_p, axis=0)
+        self.v_wsm = np.mean(self.mat_p_wsm, axis=0)
         Q1, Q3 = np.percentile(self.v, 25), np.percentile(self.v, 75)
         m_trojaned = (max(self.v) - Q3) / (Q3 - Q1)
+
+        # Some other metrics that can be used for anomaly detection
+        IQR = Q3 - Q1
+        lower_bound = (Q1 - 1.5 * IQR)
+        upper_bound = (Q3 + 1.5 * IQR)
+        print(f"Lower Bound: {lower_bound}, Upper Bound: {upper_bound}")
         return m_trojaned
     
     def _get_classifier_part(self):

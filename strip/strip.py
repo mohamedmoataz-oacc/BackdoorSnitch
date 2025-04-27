@@ -67,7 +67,7 @@ class STRIPDetector:
         print(f"Min Entropy: {min_entropy}, Max Entropy: {max_entropy}, Std Dev: {std_entropy}")
         return min_entropy, max_entropy, std_entropy
 
-    def detect_trojan(self, image_path):
+    def detect(self, image_path):
         image = self.preprocess_image(image_path)
         if image is None:
             print("Error: Failed to process test image.")
@@ -85,18 +85,13 @@ class STRIPDetector:
 
 
 if __name__ == "__main__":
-    model_path = "attack_result.pt"
-    clean_image_paths = [
-        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat2.png",
-        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat3.png",
-        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat4.png",
-        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat5.png",
-        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat6.png",
-        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat7.png",
-        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat8.png",
-        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat9.png",
-    ]
+    import glob
+
+    model_path = input("Enter model path: ")
+    clean_image_paths = glob.glob('../cifar10_clean_samples/*')
 
     detector = STRIPDetector(model_path, clean_image_paths)
-    test_image_path = "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/bd_test_dataset/1/3029.png"
-    detector.detect_trojan(test_image_path)
+    while True:
+        test_image_path = input("Enter test image path: ")
+        if test_image_path == "exit": break
+        detector.detect(test_image_path)
