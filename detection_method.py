@@ -51,7 +51,7 @@ class ONNXModelWrapper(torch.nn.Module):
         return self.model(x)
 
     def optimize_intermediate_representation(
-        self, IRc, target_class, lambda_l2, num_steps=1000, learning_rate=0.001
+        self, IRc, target_class, lambda_l2, num_steps=100, learning_rate=0.001
     ):
         self.model.eval()
         IRc.requires_grad = True

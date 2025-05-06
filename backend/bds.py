@@ -16,6 +16,7 @@ class BDS(metaclass=Singleton):
 
     def analyze_model(self, model_path, chosen_detectors, **kwargs):
         results = {}
+        params = {}
         for c, detector in enumerate(chosen_detectors):
             if detector not in self.detectors: continue
             detector_params = kwargs.pop(f"{detector}_params", {})
@@ -25,18 +26,19 @@ class BDS(metaclass=Singleton):
             print(f"[{c+1}/{len(chosen_detectors)}] Analyzing model using {detector} detector...")
             detector_instance = self.detectors[detector](model_path, **detector_params)
             results.update({detector: detector_instance.detect(*detect_args, **detect_kwargs)})
-        return results
+            params.update({detector: detector_instance.get_params()})
+        return results, params
     
     def analyze(self, model_path, **kwargs):
         detectors = config.get("detection_methods")
         print(f"Detectors used: {detectors}")
-        results = self.analyze_model(model_path, detectors, **kwargs)
-        model = self.save_results(model_path, results)
+        results, params = self.analyze_model(model_path, detectors, **kwargs)
+        model = self.save_results(model_path, results, params)
         print("Results have been saved successfully.")
         self.generate_report(model)
     
     def generate_report(self, model): ...
 
-    def save_results(self, model_path, results):
-        config.save_model_results(model_path, results)
+    def save_results(self, model_path, results, params):
+        config.save_model_results(model_path, results, params)
         config.save()

@@ -28,7 +28,10 @@ class Config(metaclass=Singleton):
         self.settings["models"].append(
             {
                 "path": model_path,
-                "detection_methods_used": {}
+                "detection_methods_used": {
+                    "params": {},
+                    "results": {}
+                }
             }
         )
         return True
@@ -39,11 +42,12 @@ class Config(metaclass=Singleton):
             if model["path"] == path:
                 return model
     
-    def save_model_results(self, model_path, results):
+    def save_model_results(self, model_path, results, params):
         models = self.settings["models"]
         for i, m in enumerate(models):
             if m["path"] == model_path:
-                self.settings["models"][i]["detection_methods_used"].update(results)
+                self.settings["models"][i]["detection_methods_used"]["results"].update(results)
+                self.settings["models"][i]["detection_methods_used"]["params"].update(params)
                 return self.settings["models"][i]
 
 
