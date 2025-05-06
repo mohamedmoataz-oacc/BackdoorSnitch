@@ -1,0 +1,123 @@
+{
+    "detection_methods": [
+        "free_eagle",
+        "strip"
+    ],
+    "models": [
+        {
+            "path": "path/to/example.onnx",
+            "detection_methods_used": {
+                "free_eagle": {
+                    "parameters": {},
+                    "results": {}
+                }
+            }
+        },
+        {
+            "path": "E:\\Desktop\\Final project\\models_conversion\\models\\cifar10_convnext_tiny_badnet_0_1.onnx",
+            "detection_methods_used": {
+                "free_eagle": [
+                    false,
+                    {
+                        "m_trojaned": 1.5507436990737915,
+                        "V": [
+                            -0.09168336540460587,
+                            -0.10854973644018173,
+                            -0.15009790658950806,
+                            -0.29831066727638245,
+                            -0.14228807389736176,
+                            0.05321328714489937,
+                            -0.06914857029914856,
+                            0.14899232983589172,
+                            0.3369765877723694,
+                            0.04328780248761177
+                        ],
+                        "lower_bound": -0.41073161363601685,
+                        "upper_bound": 0.327610045671463
+                    }
+                ],
+                "strip": [
+                    true,
+                    {
+                        "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\0007.jpg": {
+                            "entropy": 0.003651122096925974,
+                            "poisoned": false
+                        },
+                        "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\0014.jpg": {
+                            "entropy": 0.0006621450884267688,
+                            "poisoned": false
+                        },
+                        "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\0016.jpg": {
+                            "entropy": 0.007508632726967335,
+                            "poisoned": false
+                        },
+                        "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\0029.jpg": {
+                            "entropy": 0.3012864589691162,
+                            "poisoned": false
+                        },
+                        "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\0042.jpg": {
+                            "entropy": 0.00039686154923401773,
+                            "poisoned": false
+                        },
+                        "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\0066.jpg": {
+                            "entropy": 0.08984770625829697,
+                            "poisoned": false
+                        },
+                        "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\0127.jpg": {
+                            "entropy": 0.0009900938021019101,
+                            "poisoned": false
+                        },
+                        "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_121.png": {
+                            "entropy": 3.176930476911366e-06,
+                            "poisoned": true
+                        },
+                        "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_147.png": {
+                            "entropy": 7.550816008006223e-07,
+                            "poisoned": true
+                        },
+                        "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_199.png": {
+                            "entropy": 2.0742916603921913e-05,
+                            "poisoned": true
+                        },
+                        "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_25.png": {
+                            "entropy": 0.007724350783973932,
+                            "poisoned": false
+                        },
+                        "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_272.png": {
+                            "entropy": 1.0517076134419767e-06,
+                            "poisoned": true
+                        },
+                        "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_412.png": {
+                            "entropy": 1.816672011045739e-06,
+                            "poisoned": true
+                        },
+                        "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_465.png": {
+                            "entropy": 0.0001928184792632237,
+                            "poisoned": false
+                        },
+                        "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_466.png": {
+                            "entropy": 7.104801625246182e-06,
+                            "poisoned": true
+                        },
+                        "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_472.png": {
+                            "entropy": 1.824568471420207e-06,
+                            "poisoned": true
+                        },
+                        "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_6.png": {
+                            "entropy": 1.64735752150591e-06,
+                            "poisoned": true
+                        },
+                        "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_71.png": {
+                            "entropy": 5.825394282510388e-07,
+                            "poisoned": true
+                        },
+                        "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_95.png": {
+                            "entropy": 4.274915227142628e-06,
+                            "poisoned": true
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

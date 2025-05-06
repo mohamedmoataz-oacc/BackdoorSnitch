@@ -1,0 +1,50 @@
+import json
+
+
+class Singleton(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+class Config(metaclass=Singleton):
+    def __init__(self):
+        with open("backend/settings.json", 'r') as f:
+            self.settings = json.load(f)
+    
+    def get(self, key):
+        return self.settings[key]
+    
+    def set(self, key, value):
+        self.settings[key] = value
+    
+    def save(self):
+        with open("backend/settings.json", 'w') as f:
+            json.dump(self.settings, f, indent=4)
+    
+    def add_model(self, model_path):
+        if model_path in [m["path"] for m in self.settings["models"]]: return
+        self.settings["models"].append(
+            {
+                "path": model_path,
+                "detection_methods_used": {}
+            }
+        )
+        return True
+
+    def get_model(self, path):
+        models = self.settings["models"]
+        for model in models:
+            if model["path"] == path:
+                return model
+    
+    def save_model_results(self, model_path, results):
+        models = self.settings["models"]
+        for i, m in enumerate(models):
+            if m["path"] == model_path:
+                self.settings["models"][i]["detection_methods_used"].update(results)
+                return self.settings["models"][i]
+
+
+config = Config()
