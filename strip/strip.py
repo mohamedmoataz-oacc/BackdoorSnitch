@@ -48,7 +48,7 @@ class STRIPDetector(BackdoorDetector):
         self.mean_entropy = np.mean(entropies)
         self.std_entropy = np.std(entropies)
         self.threshold = max(0, self.mean_entropy - self.k * self.std_entropy)
-        print(f"[*] Entropy Mean: {self.mean_entropy:.4f}, Std: {self.std_entropy:.4f}, Threshold: {self.threshold:.4f}\n")
+        print(f"[*] Entropy Mean: {self.mean_entropy:.4f}, Std: {self.std_entropy:.4f}, Threshold: {self.threshold:.4f}")
     
     def get_params(self):
         return {'k': self.k, 'clean_images_dir': self.clean_images_dir}
@@ -103,7 +103,7 @@ class STRIPDetector(BackdoorDetector):
 
         results = {}
         trojaned = False
-        for test_img_path in test_img_paths:
+        for test_img_path in (test_img_paths if len(test_img_paths) == 1 else tqdm(test_img_paths, desc="[*] Detecting poisoned images")):
             image = Image.open(test_img_path).convert('RGB')
             test_img_tensor = self.transform(image).unsqueeze(0)
             avg_entropy = self.compute_entropy(test_img_tensor)

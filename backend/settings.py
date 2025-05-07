@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 
 class Singleton(type):
@@ -10,7 +11,7 @@ class Singleton(type):
 
 class Config(metaclass=Singleton):
     def __init__(self):
-        with open("backend/settings.json", 'r') as f:
+        with open("backend/database.json", 'r') as f:
             self.settings = json.load(f)
     
     def get(self, key):
@@ -20,7 +21,7 @@ class Config(metaclass=Singleton):
         self.settings[key] = value
     
     def save(self):
-        with open("backend/settings.json", 'w') as f:
+        with open("backend/database.json", 'w') as f:
             json.dump(self.settings, f, indent=4)
     
     def add_model(self, model_path):
@@ -28,6 +29,7 @@ class Config(metaclass=Singleton):
         self.settings["models"].append(
             {
                 "path": model_path,
+                "last_modified": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "detection_methods_used": {
                     "params": {},
                     "results": {}
@@ -46,6 +48,7 @@ class Config(metaclass=Singleton):
         models = self.settings["models"]
         for i, m in enumerate(models):
             if m["path"] == model_path:
+                self.settings["models"][i]["last_modified"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 self.settings["models"][i]["detection_methods_used"]["results"].update(results)
                 self.settings["models"][i]["detection_methods_used"]["params"].update(params)
                 return self.settings["models"][i]
