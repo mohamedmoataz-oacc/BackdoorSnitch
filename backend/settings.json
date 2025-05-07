@@ -28,221 +28,545 @@
                     "free_eagle": [
                         true,
                         {
-                            "m_trojaned": 2.2052409648895264,
+                            "m_trojaned": 0.8306356072425842,
                             "mat_p": [
                                 [
                                     0.0,
-                                    0.43922489881515503,
-                                    0.08403347432613373,
-                                    -0.3367406129837036,
-                                    0.49620819091796875,
-                                    0.40302029252052307,
-                                    0.13208246231079102,
-                                    0.5210884809494019,
-                                    0.1988682746887207,
-                                    0.790094256401062
+                                    0.34881800413131714,
+                                    0.7126915454864502,
+                                    -0.6549192070960999,
+                                    0.4315688908100128,
+                                    0.312687486410141,
+                                    0.008190453052520752,
+                                    0.4075388014316559,
+                                    0.7243717908859253,
+                                    0.5556968450546265
                                 ],
                                 [
-                                    0.6155651807785034,
+                                    0.48570990562438965,
                                     0.0,
-                                    -0.004950731992721558,
-                                    0.1742783486843109,
-                                    0.20229336619377136,
-                                    0.5731131434440613,
-                                    0.2785325050354004,
-                                    0.511827826499939,
-                                    0.6433231830596924,
-                                    1.3363511562347412
+                                    -0.10840284824371338,
+                                    0.41812664270401,
+                                    -0.2715438902378082,
+                                    0.2653987407684326,
+                                    -0.0069441162049770355,
+                                    0.6040876507759094,
+                                    0.07894676923751831,
+                                    1.0391755104064941
                                 ],
                                 [
-                                    0.5558494329452515,
-                                    -0.1710965633392334,
+                                    0.11922338604927063,
+                                    -0.6269300580024719,
                                     0.0,
-                                    0.6547074317932129,
-                                    0.4501776099205017,
-                                    -0.1873304843902588,
-                                    0.9098590612411499,
-                                    0.28357815742492676,
-                                    -0.19293515384197235,
-                                    -0.014903545379638672
+                                    -0.35451623797416687,
+                                    0.38885682821273804,
+                                    -0.4755111038684845,
+                                    1.087993860244751,
+                                    0.22055083513259888,
+                                    -1.3837165832519531,
+                                    -0.21641725301742554
                                 ],
                                 [
-                                    0.6087585091590881,
-                                    0.6266019344329834,
-                                    1.0701584815979004,
+                                    0.5334452986717224,
+                                    0.37596020102500916,
+                                    0.42283886671066284,
                                     0.0,
-                                    0.5309967994689941,
-                                    1.277313470840454,
-                                    1.4196351766586304,
-                                    0.3065377473831177,
-                                    0.1935136318206787,
-                                    0.6738126277923584
+                                    0.4481467604637146,
+                                    1.3876111507415771,
+                                    0.9573817253112793,
+                                    0.3786357343196869,
+                                    -0.10377699136734009,
+                                    -0.6032503843307495
                                 ],
                                 [
-                                    -0.22434623539447784,
-                                    0.5157408118247986,
-                                    1.2007302045822144,
-                                    0.8241263628005981,
+                                    0.2116052508354187,
+                                    -0.18630445003509521,
+                                    1.0342345237731934,
+                                    0.40440601110458374,
                                     0.0,
-                                    -0.12908214330673218,
-                                    0.8015123605728149,
-                                    0.5662658214569092,
-                                    0.061533309519290924,
-                                    0.2743576765060425
+                                    -0.30749672651290894,
+                                    0.3083668649196625,
+                                    0.25442439317703247,
+                                    -0.07409602403640747,
+                                    0.1637580692768097
                                 ],
                                 [
-                                    -1.3403342962265015,
-                                    -0.495941162109375,
-                                    -1.3904447555541992,
-                                    -0.7152895331382751,
-                                    -1.508068323135376,
+                                    -1.235243320465088,
+                                    -1.2435945272445679,
+                                    -1.4614386558532715,
+                                    0.24808770418167114,
+                                    -2.0687150955200195,
                                     0.0,
-                                    -1.5318214893341064,
-                                    -1.0583688020706177,
-                                    -1.1411384344100952,
-                                    -1.9251275062561035
+                                    -1.42922043800354,
+                                    -1.0870163440704346,
+                                    -0.9222632646560669,
+                                    -2.303279399871826
                                 ],
                                 [
-                                    0.45631134510040283,
-                                    -0.1271190047264099,
-                                    0.8675782084465027,
-                                    1.0157010555267334,
-                                    0.1050347089767456,
-                                    0.2731480598449707,
+                                    0.05850499868392944,
+                                    -0.36290988326072693,
+                                    0.6043815612792969,
+                                    0.2742042541503906,
+                                    0.22613292932510376,
+                                    -0.1123436689376831,
                                     0.0,
-                                    -0.35797226428985596,
-                                    -0.18283548951148987,
-                                    -0.5671309232711792
+                                    -0.9616127014160156,
+                                    -0.9324685335159302,
+                                    -0.9195159673690796
                                 ],
                                 [
-                                    -1.426019310951233,
-                                    -1.1654107570648193,
-                                    -0.6350473761558533,
-                                    -1.5415136814117432,
-                                    -1.1614320278167725,
-                                    -1.2315922975540161,
-                                    -1.5942034721374512,
+                                    -1.7820881605148315,
+                                    -1.1396719217300415,
+                                    -1.3954370021820068,
+                                    -1.0825634002685547,
+                                    -1.1526156663894653,
+                                    -1.065873146057129,
+                                    -2.118504524230957,
                                     0.0,
-                                    -1.9830819368362427,
-                                    -1.6333106756210327
+                                    -3.1227309703826904,
+                                    -0.8246263265609741
                                 ],
                                 [
-                                    -3.0519914627075195,
-                                    -3.6186912059783936,
-                                    -4.3989763259887695,
-                                    -4.137441635131836,
-                                    -3.1642751693725586,
-                                    -3.8408586978912354,
-                                    -4.0670061111450195,
-                                    -4.515960693359375,
+                                    -3.66957426071167,
+                                    -3.597961187362671,
+                                    -4.317225456237793,
+                                    -3.829197406768799,
+                                    -2.871260643005371,
+                                    -4.21359395980835,
+                                    -3.587040662765503,
+                                    -4.560580253601074,
                                     0.0,
-                                    -2.8087363243103027
+                                    -2.35475492477417
                                 ],
                                 [
-                                    -1.1127653121948242,
-                                    -0.032616615295410156,
-                                    -1.7837315797805786,
-                                    -0.9732062220573425,
-                                    -0.3934103548526764,
-                                    -1.1256937980651855,
-                                    -1.1691465377807617,
-                                    -0.5223848819732666,
-                                    0.38050293922424316,
+                                    -0.6219165921211243,
+                                    0.8026316165924072,
+                                    -1.717533826828003,
+                                    -1.3814122676849365,
+                                    -0.9733613133430481,
+                                    -1.6910699605941772,
+                                    -1.2501752376556396,
+                                    -1.1745696067810059,
+                                    0.22677293419837952,
                                     0.0
                                 ]
                             ],
                             "V": [
-                                -0.49189719557762146,
-                                -0.40293073654174805,
-                                -0.49906501173973083,
-                                -0.5035378336906433,
-                                -0.4442474842071533,
-                                -0.3987962603569031,
-                                -0.48205557465553284,
-                                -0.4265388548374176,
-                                -0.2022249698638916,
-                                -0.38745933771133423
+                                -0.5900333523750305,
+                                -0.5629962086677551,
+                                -0.622589111328125,
+                                -0.5957783460617065,
+                                -0.5842791199684143,
+                                -0.5900191068649292,
+                                -0.6029952168464661,
+                                -0.5918541550636292,
+                                -0.5508961081504822,
+                                -0.5463213920593262
                             ],
-                            "lower_bound": -0.623847246170044,
-                            "upper_bound": -0.26541945338249207
+                            "lower_bound": -0.6345179080963135,
+                            "upper_bound": -0.5285964012145996
                         }
                     ],
                     "strip": [
                         true,
                         {
-                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\0007.jpg": {
-                                "entropy": 0.0036,
-                                "poisoned": false
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\airplane_0007.jpg": {
+                                "entropy": 0.0,
+                                "poisoned": true
                             },
-                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\0014.jpg": {
-                                "entropy": 0.06,
-                                "poisoned": false
-                            },
-                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\0016.jpg": {
-                                "entropy": 0.1911,
-                                "poisoned": false
-                            },
-                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\0029.jpg": {
-                                "entropy": 0.3207,
-                                "poisoned": false
-                            },
-                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\0042.jpg": {
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\airplane_0021.jpg": {
                                 "entropy": 0.0004,
                                 "poisoned": false
                             },
-                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\0066.jpg": {
-                                "entropy": 0.056,
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\airplane_0261.jpg": {
+                                "entropy": 0.118,
                                 "poisoned": false
                             },
-                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\0127.jpg": {
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\airplane_0362.jpg": {
+                                "entropy": 0.8029,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\airplane_0925.jpg": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\automobile_0582.jpg": {
+                                "entropy": 0.1395,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\automobile_0607.jpg": {
+                                "entropy": 0.003,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\automobile_0748.jpg": {
+                                "entropy": 0.0026,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\automobile_0771.jpg": {
+                                "entropy": 0.013,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\automobile_0828.jpg": {
+                                "entropy": 0.6059,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\bird_0022.jpg": {
+                                "entropy": 0.0147,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\bird_0234.jpg": {
+                                "entropy": 0.3046,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\bird_0546.jpg": {
+                                "entropy": 0.2544,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\bird_0752.jpg": {
+                                "entropy": 0.349,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\bird_0869.jpg": {
+                                "entropy": 0.174,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\cat_0191.jpg": {
+                                "entropy": 0.0258,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\cat_0386.jpg": {
+                                "entropy": 0.627,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\cat_0598.jpg": {
+                                "entropy": 0.5777,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\cat_0634.jpg": {
+                                "entropy": 0.6091,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\cat_0824.jpg": {
+                                "entropy": 0.0708,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\deer_0032.jpg": {
+                                "entropy": 0.0215,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\deer_0491.jpg": {
+                                "entropy": 0.4829,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\deer_0689.jpg": {
+                                "entropy": 0.0132,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\deer_0737.jpg": {
+                                "entropy": 0.0996,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\deer_0782.jpg": {
+                                "entropy": 0.0281,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\dog_0197.jpg": {
+                                "entropy": 0.0012,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\dog_0583.jpg": {
+                                "entropy": 0.0007,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\dog_0906.jpg": {
+                                "entropy": 0.1894,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\dog_0959.jpg": {
+                                "entropy": 0.0047,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\dog_0996.jpg": {
+                                "entropy": 0.0025,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\frog_0298.jpg": {
                                 "entropy": 0.0009,
                                 "poisoned": false
                             },
-                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_121.png": {
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\frog_0542.jpg": {
+                                "entropy": 0.0958,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\frog_0569.jpg": {
+                                "entropy": 0.0131,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\frog_0860.jpg": {
+                                "entropy": 0.2171,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\frog_0981.jpg": {
+                                "entropy": 0.1493,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\horse_0301.jpg": {
+                                "entropy": 0.0005,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\horse_0507.jpg": {
+                                "entropy": 0.0233,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\horse_0553.jpg": {
+                                "entropy": 0.1443,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\horse_0806.jpg": {
+                                "entropy": 0.0013,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\horse_0822.jpg": {
+                                "entropy": 0.0141,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\ship_0146.jpg": {
+                                "entropy": 0.0123,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\ship_0252.jpg": {
+                                "entropy": 0.2199,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\ship_0698.jpg": {
+                                "entropy": 0.4136,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\ship_0760.jpg": {
+                                "entropy": 0.0003,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\ship_0950.jpg": {
+                                "entropy": 0.002,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\truck_0289.jpg": {
+                                "entropy": 0.0912,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\truck_0311.jpg": {
+                                "entropy": 0.3355,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\truck_0622.jpg": {
+                                "entropy": 0.0095,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\truck_0658.jpg": {
+                                "entropy": 0.0054,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\truck_0731.jpg": {
+                                "entropy": 0.0064,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_automobile_4647.png": {
                                 "entropy": 0.0001,
                                 "poisoned": false
                             },
-                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_147.png": {
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_automobile_6172.png": {
                                 "entropy": 0.0,
                                 "poisoned": true
                             },
-                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_199.png": {
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_automobile_6655.png": {
+                                "entropy": 0.3985,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_automobile_9113.png": {
                                 "entropy": 0.0,
                                 "poisoned": true
                             },
-                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_25.png": {
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_automobile_9145.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_automobile_962.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_bird_3773.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_bird_5215.png": {
                                 "entropy": 0.0001,
                                 "poisoned": false
                             },
-                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_272.png": {
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_bird_569.png": {
+                                "entropy": 0.2365,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_bird_6046.png": {
                                 "entropy": 0.0,
                                 "poisoned": true
                             },
-                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_412.png": {
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_bird_6252.png": {
                                 "entropy": 0.0,
                                 "poisoned": true
                             },
-                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_465.png": {
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_bird_9873.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_cat_1168.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_cat_3674.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_cat_7015.png": {
+                                "entropy": 0.0831,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_cat_8258.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_cat_898.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_cat_9437.png": {
                                 "entropy": 0.0001,
                                 "poisoned": false
                             },
-                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_466.png": {
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_deer_1186.png": {
                                 "entropy": 0.0,
                                 "poisoned": true
                             },
-                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_472.png": {
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_deer_3043.png": {
                                 "entropy": 0.0,
                                 "poisoned": true
                             },
-                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_6.png": {
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_deer_5389.png": {
                                 "entropy": 0.0,
                                 "poisoned": true
                             },
-                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_71.png": {
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_deer_7044.png": {
                                 "entropy": 0.0,
                                 "poisoned": true
                             },
-                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_95.png": {
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_deer_9597.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_deer_9962.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_dog_1804.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_dog_2051.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_dog_212.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_dog_2827.png": {
+                                "entropy": 0.0001,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_dog_4406.png": {
+                                "entropy": 0.0002,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_dog_6386.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_frog_1058.png": {
+                                "entropy": 0.0802,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_frog_2412.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_frog_3880.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_frog_8984.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_frog_902.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_frog_994.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_horse_1296.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_horse_1402.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_horse_4878.png": {
+                                "entropy": 0.098,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_horse_6089.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_horse_7745.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_horse_9978.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_ship_2511.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_ship_3653.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_ship_7459.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_ship_7977.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_ship_8361.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_ship_9183.png": {
+                                "entropy": 0.0,
+                                "poisoned": true
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_truck_8225.png": {
+                                "entropy": 0.3661,
+                                "poisoned": false
+                            },
+                            "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test\\p_truck_8413.png": {
                                 "entropy": 0.0,
                                 "poisoned": true
                             }
