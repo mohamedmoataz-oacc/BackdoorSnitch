@@ -7,9 +7,13 @@ import torch
 
 
 class FreeEagleDetector(BackdoorDetector):
-    def __init__(self, model_path: str, l_sep: int = None, classifier_after_relu: bool = False):
+    def __init__(
+        self, model_path: str, l_sep: int = None, classifier_after_relu: bool = False, **kwargs
+    ):
         super().__init__(model_path)
         self.model = shape_inference.infer_shapes(self.model)
+        self.kwargs = kwargs
+        print(f"[*] FreeEagleDetector extra params: {self.kwargs}")
         if l_sep: self.classifier_after_relu = classifier_after_relu
         self.set_l_sep(l_sep)
     
@@ -72,7 +76,11 @@ class FreeEagleDetector(BackdoorDetector):
             The optimized dummy intermediate representation.
         """
         irc = torch.tensor(self._create_random_ir(self._get_intermediate_output_shape()))
-        optimized_IRc = self.optimizer.optimize_intermediate_representation(irc, target_class, scale_factor)
+        optimized_IRc = self.optimizer.optimize_intermediate_representation(
+            irc, target_class, scale_factor,
+            num_steps=self.kwargs.get('optimizer_epochs', 250),
+            learning_rate=self.kwargs.get('optimizer_learning_rate', 0.001)
+        )
         return optimized_IRc.detach().cpu().numpy()
     
     def generate_posteriors_matrix(self, intermediate_representations):
