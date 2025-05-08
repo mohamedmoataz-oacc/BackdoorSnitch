@@ -21,6 +21,7 @@ class Config(metaclass=Singleton):
         self.settings[key] = value
     
     def save(self):
+        print("Saving config...")
         with open("backend/database.json", 'w') as f:
             json.dump(self.settings, f, indent=4)
     

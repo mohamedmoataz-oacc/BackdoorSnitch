@@ -1,11 +1,15 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea, QFrame
-from scan_entry import ScanEntryWidget
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea
+from PySide6.QtCore import Qt
+
+from gui.scan_entry import ScanEntryWidget
+
 
 class HistoryPage(QWidget):
     def __init__(self, scan_data):
         super().__init__()
+        self.show_history(scan_data)
 
+    def show_history(self, scan_data):
         layout = QVBoxLayout(self)
 
         title = QLabel("📊 Scan History")

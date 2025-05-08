@@ -5,12 +5,12 @@ from glob import glob
 
 if __name__ == "__main__":
     backend = BDS()
-    model_path = "E:\\Desktop\\Final project\\models_conversion\\models\\cifar10_resnet18_badnet.onnx"
+    model_path = "E:\\Desktop\\Final project\\models_conversion\\models_for_test_results\\cifar10_convnext_tiny_badnet_0_1\\cifar10_convnext_tiny_badnet_0_1.onnx"
 
     backend.add_model(model_path=model_path)
     backend.analyze(
         model_path=model_path,
-        free_eagle_params={"optimizer_epochs": 10},
+        free_eagle_params={"optimizer_epochs": 100},
         strip_params={"clean_images_dir": "E:\\Desktop\\Final project\\models_conversion\\models_for_test_results\\cifar10_convnext_tiny_badnet_0_1\\strip_test"},
         strip_args=(
             glob("E:\\Desktop\\Final project\\models_conversion\\models_for_test_results\\cifar10_convnext_tiny_badnet_0_1\\strip_test\\badnet_trojan_test\\*.jpg") +

@@ -1,22 +1,25 @@
 from PySide6.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QGraphicsDropShadowEffect,
-    QHBoxLayout, QFrame, QFileDialog, QMessageBox
+    QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QFrame, QFileDialog, QMessageBox
 )
-from progress_bar import CircularProgress  # import your custom widget
-
-from PySide6.QtGui import QPixmap, QIcon, QGuiApplication
+from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QPainter, QPen, QFont
-from PySide6.QtGui import QColor
+
 import sys
 import onnx
-import zipfile
+from backend.bds import BDS
+from multiprocessing import Process
+from gui.progress_bar import CircularProgress  # import your custom widget
+
 
 class ScanPage(QWidget):
-    def __init__(self):
+    def __init__(self, backend: BDS):
         super().__init__()
-        self.contents_layout = QVBoxLayout(self)
+        self.backend = backend
 
+        self.model_path = None
+        self.data_dir = None
+
+        self.contents_layout = QVBoxLayout(self)
         self.content = QFrame()
         self.content.setStyleSheet("font-size:25px;")
         
@@ -34,14 +37,13 @@ class ScanPage(QWidget):
         self.step1()
         self.contents_layout.addWidget(self.content)
 
-        
     def step1(self):
         self.step = QLabel("Step1: Upload Network")
         self.step.setStyleSheet("font-size:25px; padding-top:90px;")
 
         self.content_layout.addWidget(self.step, alignment=Qt.AlignCenter)
 
-        prog = QPixmap("./gui/progress.png")
+        prog = QPixmap("./gui/assets/progress.png")
         self.progress_bar.setPixmap(prog)
         self.progress_bar.setScaledContents(True)
         self.progress_bar.setFixedSize(320, 22)
@@ -49,9 +51,7 @@ class ScanPage(QWidget):
         self.content_layout.addWidget(self.progress_bar, alignment=Qt.AlignCenter)
 
         # upload box 
-        self.create_input("ONNX")
-        
-
+        self.create_input("ONNX file")
 
     def step2(self):
         self.step.setParent(None)
@@ -65,7 +65,7 @@ class ScanPage(QWidget):
         self.content_layout.addWidget(self.step, alignment=Qt.AlignCenter)
 
         self.progress_bar = QLabel()
-        prog = QPixmap("./gui/comp1.png")
+        prog = QPixmap("./gui/assets/comp1.png")
         self.progress_bar.setPixmap(prog)
         self.progress_bar.setScaledContents(True)
         self.progress_bar.setFixedSize(330, 26)
@@ -73,10 +73,7 @@ class ScanPage(QWidget):
         self.content_layout.addWidget(self.progress_bar, alignment=Qt.AlignCenter)
 
         # upload box 
-        self.create_input('zip')
-        
-        
-
+        self.create_input('data directory')
 
     def step3(self):
         # Clear previous widgets
@@ -85,13 +82,25 @@ class ScanPage(QWidget):
         self.continue_button.setParent(None)
         self.upload_box.setParent(None)
 
+        # Send model and data_dir to backend
+        self.backend.add_model(self.model_path)
+        self.backend_process = Process(
+            target=self.backend.analyze,
+            kwargs={
+                "model_path": self.model_path,
+                "free_eagle_params": {"optimizer_epochs": 10},
+                "strip_params": {"clean_images_dir": self.data_dir},
+            }
+        )
+        self.backend_process.start()
+
         # Step label
         self.step = QLabel("Step3: Network Analysis")
         self.step.setStyleSheet("font-size:25px; padding-top:90px;")
         self.content_layout.addWidget(self.step, alignment=Qt.AlignCenter)
 
         self.progress_bar = QLabel()
-        prog = QPixmap("./gui/comp2.png")
+        prog = QPixmap("./gui/assets/comp2.png")
         self.progress_bar.setPixmap(prog)
         self.progress_bar.setScaledContents(True)
         self.progress_bar.setFixedSize(330, 26)
@@ -137,10 +146,10 @@ class ScanPage(QWidget):
         if self.progress_value < 100:
             self.progress_value += 1
             self.circular_progress.setValue(self.progress_value)
-        else:
-            self.timer.stop()
+        
+        if not self.backend_process.is_alive():
             self.download_button.setVisible(True)
-
+            self.timer.stop()
 
     def resizeEvent(self, event):
         self.upload_width = self.width() * 0.55
@@ -175,23 +184,19 @@ class ScanPage(QWidget):
             onnx.checker.check_model(onnx_model)  # Validate model
 
             self.contents_layout.addWidget(self.continue_button, alignment=Qt.AlignRight)
+            self.model_path = file_path
         except Exception as e:
             self.continue_button.setParent(None)
             QMessageBox.critical(self, "Error", f"Invalid ONNX file!\n{str(e)}")
 
-    def upload_zip_file(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Select Zip File", "", "ZIP Files (*.zip)")
+    def choose_data_dir(self):
+        dir_path = QFileDialog.getExistingDirectory(self, "Select directory containing sample data", "")
         
-        if not file_path:
+        if not dir_path:
             return  # No file selected
         
-        if zipfile.is_zipfile(file_path):
-            self.contents_layout.addWidget(self.continue_button, alignment=Qt.AlignRight)
-        
-        else:
-            self.continue_button.setParent(None)
-            QMessageBox.critical(self, "Error", f"Invalid zip file!")
-
+        self.contents_layout.addWidget(self.continue_button, alignment=Qt.AlignRight)
+        self.data_dir = dir_path
 
     def create_input(self, type: str):
         # Clear existing widgets from the upload box before reusing it
@@ -215,7 +220,7 @@ class ScanPage(QWidget):
             upload_layout.setSpacing(20)
             self.upload_box.setLayout(upload_layout)
 
-        self.box_label = QLabel(f"Drag .{type} file here or Click to upload")
+        self.box_label = QLabel(f"Drag {type} here or Click to upload")
         upload_layout.addWidget(self.box_label)
         self.box_label.setStyleSheet(
             "font-size:22px; border-bottom: 1px solid white;  padding-bottom:15px;"
@@ -225,7 +230,7 @@ class ScanPage(QWidget):
         self.content_layout.addWidget(self.upload_box)
 
         self.upload_icon = QLabel()
-        upload = QPixmap("./gui/upload.png")
+        upload = QPixmap("./gui/assets/upload.png")
         self.upload_icon.setPixmap(upload)
         self.upload_icon.setScaledContents(True)
         self.upload_icon.setFixedSize(125, 170)
@@ -247,8 +252,8 @@ class ScanPage(QWidget):
             pass  # No previous connection, safe to proceed
 
         # Assign the correct upload function based on file type
-        if type.lower() == "zip":
-            self.upload_button.clicked.connect(self.upload_zip_file)
+        if type.lower() == "data directory":
+            self.upload_button.clicked.connect(self.choose_data_dir)
         else:
             self.upload_button.clicked.connect(self.upload_onnx_file)
 
@@ -268,10 +273,11 @@ class ScanPage(QWidget):
         except TypeError:
             pass  # No previous connection, safe to proceed
 
-        if type.lower() == "zip":
+        if type.lower() == "data directory":
             self.continue_button.clicked.connect(self.step3)
         else:
             self.continue_button.clicked.connect(self.step2)
+    
     def progress(self, value):
         self.progress = value
         self.update()

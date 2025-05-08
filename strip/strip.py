@@ -103,7 +103,7 @@ class STRIPDetector(BackdoorDetector):
 
         results = {}
         trojaned = False
-        for test_img_path in (test_img_paths if len(test_img_paths) == 1 else tqdm(test_img_paths, desc="[*] Detecting poisoned images")):
+        for test_img_path in (test_img_paths if len(test_img_paths) == 0 else tqdm(test_img_paths, desc="[*] Detecting poisoned images")):
             image = Image.open(test_img_path).convert('RGB')
             test_img_tensor = self.transform(image).unsqueeze(0)
             avg_entropy = self.compute_entropy(test_img_tensor)

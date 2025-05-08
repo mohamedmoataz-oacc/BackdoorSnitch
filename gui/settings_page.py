@@ -5,9 +5,11 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 
+
 class SettingsPage(QFrame):
-    def __init__(self):
+    def __init__(self, config):
         super().__init__()
+        self.config = config
         self.setup_ui()
         
     def setup_ui(self):
@@ -48,26 +50,24 @@ class SettingsPage(QFrame):
         methods_layout.setSpacing(25)  # Increased spacing between methods
         
         # Method checkboxes
-        self.abs_check = self._create_method_checkbox(
-            "ABS (Artificial Brain Stimulation)", 
-            "Neural trojan detection")
-        
-        self.ban_check = self._create_method_checkbox(
-            "BAN (Detecting Backdoors Activated by Adversarial Neuron Noise)", 
-            "Neural trojan detection")
-            
         self.freeagle_check = self._create_method_checkbox(
             "FreeEagle", 
-            "Neural trojan detection")
-            
-        self.signature_check = self._create_method_checkbox(
-            "Signature-based in DNN Weights", 
-            "Neural trojan detection")
+            "Neural trojan detection during validation"
+        )
+        self.freeagle_check.findChild(QCheckBox).setChecked(
+            "free_eagle" in self.config.settings.get("detection_methods")
+        )
         
-        methods_layout.addWidget(self.abs_check)
-        methods_layout.addWidget(self.ban_check)
+        self.strip_check = self._create_method_checkbox(
+            "STRIP", 
+            "Neural trojan detection after deployment"
+        )
+        self.strip_check.findChild(QCheckBox).setChecked(
+            "strip" in self.config.settings.get("detection_methods")
+        )
+        
         methods_layout.addWidget(self.freeagle_check)
-        methods_layout.addWidget(self.signature_check)
+        methods_layout.addWidget(self.strip_check)
         
         # Add spacer at bottom to push content up
         methods_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
@@ -159,15 +159,12 @@ class SettingsPage(QFrame):
     def save_settings(self):
         """Collect and save the selected methods"""
         selected_methods = []
-        if self.abs_check.findChild(QCheckBox).isChecked():
-            selected_methods.append("ABS")
-        if self.ban_check.findChild(QCheckBox).isChecked():
-            selected_methods.append("BAN")
         if self.freeagle_check.findChild(QCheckBox).isChecked():
-            selected_methods.append("FreeEagle")
-        if self.signature_check.findChild(QCheckBox).isChecked():
-            selected_methods.append("Signature-based")
-            
-        print("Selected methods:", selected_methods)
+            selected_methods.append("free_eagle")
+        if self.strip_check.findChild(QCheckBox).isChecked():
+            selected_methods.append("strip")
+        
         # Here you would typically save to config file or database
-        QMessageBox.information(self, "Saved", "Configuration saved successfully!")
+        self.config.settings["detection_methods"] = selected_methods
+        self.config.save()
+        QMessageBox.information(self, "Saved", f"Configuration saved successfully!")

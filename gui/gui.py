@@ -4,17 +4,22 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QPixmap, QIcon, QGuiApplication, QColor
 from PySide6.QtCore import Qt, QTimer
-import sys
 
-from scan_page import ScanPage
-from settings_page import SettingsPage
-from history_page import HistoryPage
+import sys
+from gui.scan_page import ScanPage
+from gui.settings_page import SettingsPage
+from gui.history_page import HistoryPage
+from backend.settings import config
+from backend.bds import BDS
+
 
 class MainWindow(QWidget):
-    def __init__(self):
+    def __init__(self, backend: BDS):
         super().__init__()
+        self.backend = backend
+
         self.setWindowTitle("Backdoor Snitch")
-        pixmap = QPixmap('./gui/logo_light.png')
+        pixmap = QPixmap('./gui/assets/logo_light.png')
         self.setWindowIcon(QIcon(pixmap))
 
         # Get the screen geometry
@@ -82,36 +87,16 @@ class MainWindow(QWidget):
         self.stacked_widget = QStackedWidget()
         
         # Scan page
-        self.scan_page = ScanPage()
+        self.scan_page = ScanPage(self.backend)
         self.stacked_widget.addWidget(self.scan_page)
         
         # Settings page
-        self.settings_page = SettingsPage()
+        self.settings_page = SettingsPage(config)
         self.stacked_widget.addWidget(self.settings_page)
         
-        # Help page (placeholder)
-        scan_data = [
-            {
-                "date": "2025-05-08",
-                "model_path": "/models/scan1.obj",
-                "result_summary": "2 threats detected",
-                "report_path": "./reports/scan1_report.pdf"
-            },
-            {
-                "date": "2025-05-07",
-                "model_path": "/models/scan2.obj",
-                "result_summary": "No threats detected",
-                "report_path": None
-            },{
-                "date": "2025-05-08",
-                "model_path": "/models/scan1.obj",
-                "result_summary": "2 threats detected",
-                "report_path": "./reports/scan1_report.pdf"
-            },
-        ]
-
-        self.help_page = HistoryPage(scan_data)
-        self.stacked_widget.addWidget(self.help_page)
+        scan_data = config.settings["models"]
+        self.history_page = HistoryPage(scan_data)
+        self.stacked_widget.addWidget(self.history_page)
 
         # Create navigation buttons
         self.scan_button = self.create_button("Scan")     
@@ -123,9 +108,9 @@ class MainWindow(QWidget):
         self.settings_button.clicked.connect(lambda: self.switch_page(1))
         buttons_layout.addWidget(self.settings_button)
 
-        self.help_button = self.create_button("History")     
-        self.help_button.clicked.connect(lambda: self.switch_page(2))
-        buttons_layout.addWidget(self.help_button)
+        self.history_button = self.create_button("History")     
+        self.history_button.clicked.connect(lambda: self.switch_page(2))
+        buttons_layout.addWidget(self.history_button)
 
         sidebar_layout.addWidget(buttons_container)
         self.sidebar.setLayout(sidebar_layout)
@@ -144,7 +129,7 @@ class MainWindow(QWidget):
         self.stacked_widget.setCurrentIndex(index)
         
         # Update button styles
-        buttons = [self.scan_button, self.settings_button, self.help_button]
+        buttons = [self.scan_button, self.settings_button, self.history_button]
         for i, button in enumerate(buttons):
             if i == index:
                 self.mark_button(button)
@@ -190,10 +175,8 @@ class MainWindow(QWidget):
         sidebar_effect.setColor(QColor(0, 0, 0, 200))  # Light black shadow
         self.sidebar.setGraphicsEffect(sidebar_effect)
 
-        print("Shadow effect applied:", self.scan_button.graphicsEffect(), self.sidebar.graphicsEffect())
-
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
+    app = QApplication()
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
