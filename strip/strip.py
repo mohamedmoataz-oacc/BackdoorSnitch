@@ -1,102 +1,114 @@
+import os
+import glob
 import torch
+import random
 import numpy as np
-import torchvision.models as models
-from torchvision import transforms
 from PIL import Image
+from tqdm import tqdm
+import torchvision.transforms as transforms
+from detection_method import BackdoorDetector, ONNXModelWrapper
 
 
-class STRIPDetector:
-    def __init__(self, model_path, clean_image_paths):
-        self.model = self.load_model(model_path)
-        if self.model is None:
-            raise ValueError("Failed to load model")
+# STRIP Detector class
+class STRIPDetector(BackdoorDetector):
+    def __init__(self, model_path, clean_images_dir, k=1.0):
+        """
+        Initialize the STRIPDetector.
 
-        self.clean_images = [self.preprocess_image(img_path) for img_path in clean_image_paths]
-        self.clean_images = [img for img in self.clean_images if img is not None]
+        Args:
+            model_path (str): Path to the ONNX model file.
+            clean_images_dir (str): Directory containing clean images for perturbation.
+            k (float, optional): Multiplicative factor for threshold calculation. Default is 1.0.
 
-        if len(self.clean_images) < 2:
-            raise ValueError("Not enough valid clean images loaded.")
+        The initialization process involves loading the model, setting up the image transformation
+        pipeline, loading and preprocessing clean images, and computing entropy statistics for 
+        thresholding purposes.
+        """
 
-        self.min_entropy, self.max_entropy, self.std_entropy = self.compute_min_max_entropy()
+        super().__init__(model_path)
+        self.model_torch = ONNXModelWrapper(self.model)
+        self.clean_images_dir = clean_images_dir
+        self.k = k
 
-    def load_model(self, path):
-        try:
-            checkpoint = torch.load(path, map_location="cpu", weights_only=False)
-            model_name = checkpoint.get("model_name", "convnext_tiny")
-            num_classes = checkpoint.get("num_classes", 10)
-            model_weights = checkpoint.get("model")
-
-            if model_name == "convnext_tiny":
-                model = models.convnext_tiny(weights=None)
-                model.classifier[2] = torch.nn.Linear(768, num_classes)
-            else:
-                raise ValueError(f"Unknown model type: {model_name}")
-
-            model.load_state_dict(model_weights)
-            model.eval()
-            print(f"Model {model_name} loaded successfully!")
-            return model
-        except Exception as e:
-            print(f"Error loading model: {e}")
-            return None
-
-    def preprocess_image(self, image_path):
-        transform = transforms.Compose([
-            transforms.Resize((32, 32)),
-            transforms.ToTensor()
+        # Define image transform
+        self.transform = transforms.Compose([
+            # transforms.Resize((32, 32)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.4914, 0.4822, 0.4465], std=[0.2023, 0.1994, 0.2010])
         ])
-        try:
-            image = Image.open(image_path).convert("RGB")
-            return transform(image).unsqueeze(0)
-        except Exception as e:
-            print(f"Error loading image {image_path}: {e}")
-            return None
+        self.clean_image_tensors = [
+            self.load_and_preprocess(path) for path in glob.glob(os.path.join(self.clean_images_dir, '*.jpg'))
+        ]
 
-    def compute_entropy(self, probabilities):
-        log_probs = torch.log2(probabilities + 1e-9)
-        return -torch.sum(probabilities * log_probs, dim=1)
-
-    def compute_min_max_entropy(self):
         entropies = []
-        with torch.no_grad():
-            for img in self.clean_images:
-                probabilities = torch.nn.functional.softmax(self.model(img), dim=1)
-                entropies.append(self.compute_entropy(probabilities).item())
-        min_entropy, max_entropy, std_entropy = min(entropies), max(entropies), np.std(entropies)
-        print(f"Entropies: {entropies}")
-        print(f"Min Entropy: {min_entropy}, Max Entropy: {max_entropy}, Std Dev: {std_entropy}")
-        return min_entropy, max_entropy, std_entropy
+        for clean_tensor in tqdm(self.clean_image_tensors, desc="[*] Computing clean entropy stats for thresholding"):
+            e = self.compute_entropy(clean_tensor.unsqueeze(0))
+            entropies.append(e)
 
-    def detect_trojan(self, image_path):
-        image = self.preprocess_image(image_path)
-        if image is None:
-            print("Error: Failed to process test image.")
-            return
+        self.mean_entropy = np.mean(entropies)
+        self.std_entropy = np.std(entropies)
+        self.threshold = max(0, self.mean_entropy - self.k * self.std_entropy)
+        print(f"[*] Entropy Mean: {self.mean_entropy:.4f}, Std: {self.std_entropy:.4f}, Threshold: {self.threshold:.4f}")
+    
+    def get_params(self):
+        return {'k': self.k, 'clean_images_dir': self.clean_images_dir}
 
-        with torch.no_grad():
-            probabilities = torch.nn.functional.softmax(self.model(image), dim=1)
-            entropy = self.compute_entropy(probabilities).item()
-        print(f"Test Image Entropy: {entropy}")
+    def load_and_preprocess(self, path):
+        image = Image.open(path).convert('RGB')
+        return self.transform(image)
 
-        if entropy < (self.min_entropy * 0.8) or entropy > (self.max_entropy * 1.2):
-            print("Trojaned Input Detected!")
-        else:
-            print("Input is Clean")
+    def entropy(self, probs):
+        return -torch.sum(probs * torch.log(probs + 1e-8), dim=1).mean().item()
 
+    def compute_entropy(self, test_img_tensor):
+        """
+        Computes the entropy of predictions for a test image tensor by blending it with random clean image tensors.
 
-if __name__ == "__main__":
-    model_path = "attack_result.pt"
-    clean_image_paths = [
-        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat2.png",
-        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat3.png",
-        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat4.png",
-        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat5.png",
-        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat6.png",
-        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat7.png",
-        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat8.png",
-        "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/cat9.png",
-    ]
+        This function perturbs the test image tensor by blending it with several clean images, processes these 
+        perturbed images through the model, collects the predictions, and calculates the entropy of the 
+        aggregated predictions.
 
-    detector = STRIPDetector(model_path, clean_image_paths)
-    test_image_path = "C:/Users/Nour SalahEldin/Desktop/BackdoorSnitch-main/strip/bd_test_dataset/1/3029.png"
-    detector.detect_trojan(test_image_path)
+        Parameters:
+            test_img_tensor (torch.Tensor): The input image tensor for which entropy is to be computed.
+
+        Returns:
+            float: The computed entropy of the perturbed image predictions.
+        """
+
+        perturbed_preds = []
+
+        for clean_img_tensor in random.sample(self.clean_image_tensors, 10):
+            blended = 0.8 * test_img_tensor + 0.2 * clean_img_tensor.unsqueeze(0)
+            blended = blended.to(self.device)
+
+            output = self.model_torch(blended)
+            probs = torch.nn.functional.softmax(output, dim=1)
+            perturbed_preds.append(probs)
+
+        probs_stack = torch.cat(perturbed_preds, dim=0)
+        return self.entropy(probs_stack)
+
+    def detect(self, *test_img_paths):
+        """
+        Computes the entropy of predictions for a test image tensor and compares it to a pre-set threshold to
+        detect if the image contains a trojan.
+
+        Parameters:
+            test_img_tensor (torch.Tensor): The input image tensor for which trojan detection is to be performed.
+
+        Returns:
+            tuple[bool, dict]: A tuple containing a boolean indicating if the image contains a trojan and a dictionary
+            with the computed entropy.
+        """
+
+        results = {}
+        trojaned = False
+        for test_img_path in (test_img_paths if len(test_img_paths) == 1 else tqdm(test_img_paths, desc="[*] Detecting poisoned images")):
+            image = Image.open(test_img_path).convert('RGB')
+            test_img_tensor = self.transform(image).unsqueeze(0)
+            avg_entropy = self.compute_entropy(test_img_tensor)
+            is_trojan = round(avg_entropy, 4) <= round(self.threshold, 4)
+            results.update({test_img_path: {"entropy": round(avg_entropy, 4), "poisoned": bool(is_trojan)}})
+            if is_trojan: trojaned = True
+        
+        return trojaned, results

@@ -1,0 +1,16 @@
+{
+    "detection_methods": [
+        "free_eagle",
+        "strip"
+    ],
+    "models": [
+        {
+            "path": "path/to/example.onnx",
+            "last_modified": "2025-05-07 00:00:00",
+            "detection_methods_used": {
+                "params": {},
+                "results": {}
+            }
+        }
+    ]
+}
