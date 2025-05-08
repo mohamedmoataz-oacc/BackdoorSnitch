@@ -5,8 +5,10 @@ import random
 
 clean_images_dir = "E:\\Desktop\\Final project\\CIFAR-10-images\\test"
 poisoned_images_dir = "E:\\Desktop\\Final project\\models_conversion\\torch_models\\cifar10_convnext_tiny_badnet_0_1\\bd_test_dataset"
-test_images_dir = "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test\\badnet_trojan_test"
-clean_training_images_dir = "E:\\Desktop\\Final project\\CIFAR-10-images\\strip_test"
+
+clean_training_images_dir = \
+    "E:\\Desktop\\Final project\\models_conversion\\models_for_test_results\\cifar10_convnext_tiny_badnet_0_1\\strip_test"
+test_images_dir = f"{clean_training_images_dir}\\badnet_trojan_test"
 
 labels = ["airplane", "automobile", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck"]
 clean_images = [glob.glob(clean_images_dir + f"\\{labels[i]}\\*.jpg") for i in range(10)]
@@ -16,7 +18,7 @@ dups = set()
 chosen_train_images = list()
 for images in clean_images:
     chosen = 0
-    while chosen != 10:
+    while chosen != 20:
         image = random.sample(images, 1)[0]
         name = image.split("\\")[-1]
         if name in dups: continue
@@ -28,7 +30,7 @@ for images in clean_images:
 chosen_clean_images = list()
 for images in clean_images:
     chosen = 0
-    while chosen != 5:
+    while chosen != 50:
         image = random.sample(images, 1)[0]
         name = image.split("\\")[-1]
         if name in dups: continue
@@ -39,8 +41,7 @@ for images in clean_images:
 
 chosen_poisoned_images = list()
 for images in poisoned_images:
-    chosen_poisoned_images.extend(random.sample(images, 6))
-chosen_poisoned_images = chosen_poisoned_images[:50]
+    chosen_poisoned_images.extend(random.sample(images, 60))
 
 for i in chosen_train_images:
     names = i.split("\\")

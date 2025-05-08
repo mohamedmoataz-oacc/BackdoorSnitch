@@ -108,7 +108,7 @@ class STRIPDetector(BackdoorDetector):
             test_img_tensor = self.transform(image).unsqueeze(0)
             avg_entropy = self.compute_entropy(test_img_tensor)
             is_trojan = round(avg_entropy, 4) <= round(self.threshold, 4)
-            results.update({test_img_path: {"entropy": round(avg_entropy, 4), "poisoned": is_trojan}})
+            results.update({test_img_path: {"entropy": round(avg_entropy, 4), "poisoned": bool(is_trojan)}})
             if is_trojan: trojaned = True
         
         return trojaned, results

@@ -33,9 +33,12 @@ class BDS(metaclass=Singleton):
         detectors = config.get("detection_methods")
         print(f"Detectors used: {detectors}")
         results, params = self.analyze_model(model_path, detectors, **kwargs)
-        model = self.save_results(model_path, results, params)
-        print("Results have been saved successfully.")
-        self.generate_report(model)
+        try:
+            model = self.save_results(model_path, results, params)
+            print("Results have been saved successfully.")
+            self.generate_report(model)
+        except Exception as e:
+            print(f"Failed to save results: {e}")
     
     def generate_report(self, model): ...
 
