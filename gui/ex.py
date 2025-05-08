@@ -8,12 +8,13 @@ import sys
 
 from scan_page import ScanPage
 from settings_page import SettingsPage
+from history_page import HistoryPage
 
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Backdoor Snitch")
-        pixmap = QPixmap("./logo_light.png")
+        pixmap = QPixmap('./gui/logo_light.png')
         self.setWindowIcon(QIcon(pixmap))
 
         # Get the screen geometry
@@ -89,8 +90,27 @@ class MainWindow(QWidget):
         self.stacked_widget.addWidget(self.settings_page)
         
         # Help page (placeholder)
-        self.help_page = QLabel("Help Page - Under Construction")
-        self.help_page.setAlignment(Qt.AlignCenter)
+        scan_data = [
+            {
+                "date": "2025-05-08",
+                "model_path": "/models/scan1.obj",
+                "result_summary": "2 threats detected",
+                "report_path": "./reports/scan1_report.pdf"
+            },
+            {
+                "date": "2025-05-07",
+                "model_path": "/models/scan2.obj",
+                "result_summary": "No threats detected",
+                "report_path": None
+            },{
+                "date": "2025-05-08",
+                "model_path": "/models/scan1.obj",
+                "result_summary": "2 threats detected",
+                "report_path": "./reports/scan1_report.pdf"
+            },
+        ]
+
+        self.help_page = HistoryPage(scan_data)
         self.stacked_widget.addWidget(self.help_page)
 
         # Create navigation buttons
@@ -103,7 +123,7 @@ class MainWindow(QWidget):
         self.settings_button.clicked.connect(lambda: self.switch_page(1))
         buttons_layout.addWidget(self.settings_button)
 
-        self.help_button = self.create_button("Help")     
+        self.help_button = self.create_button("History")     
         self.help_button.clicked.connect(lambda: self.switch_page(2))
         buttons_layout.addWidget(self.help_button)
 

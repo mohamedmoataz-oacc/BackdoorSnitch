@@ -2,6 +2,8 @@ from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QGraphicsDropShadowEffect,
     QHBoxLayout, QFrame, QFileDialog, QMessageBox
 )
+from progress_bar import CircularProgress  # import your custom widget
+
 from PySide6.QtGui import QPixmap, QIcon, QGuiApplication
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QPainter, QPen, QFont
@@ -39,7 +41,7 @@ class ScanPage(QWidget):
 
         self.content_layout.addWidget(self.step, alignment=Qt.AlignCenter)
 
-        prog = QPixmap("progress.png")
+        prog = QPixmap("./gui/progress.png")
         self.progress_bar.setPixmap(prog)
         self.progress_bar.setScaledContents(True)
         self.progress_bar.setFixedSize(320, 22)
@@ -63,7 +65,7 @@ class ScanPage(QWidget):
         self.content_layout.addWidget(self.step, alignment=Qt.AlignCenter)
 
         self.progress_bar = QLabel()
-        prog = QPixmap("comp1.png")
+        prog = QPixmap("./gui/comp1.png")
         self.progress_bar.setPixmap(prog)
         self.progress_bar.setScaledContents(True)
         self.progress_bar.setFixedSize(330, 26)
@@ -75,24 +77,69 @@ class ScanPage(QWidget):
         
         
 
+
     def step3(self):
+        # Clear previous widgets
         self.step.setParent(None)
         self.progress_bar.setParent(None)
         self.continue_button.setParent(None)
         self.upload_box.setParent(None)
 
-        self.step = QLabel("Step2: Upload data sample\nfor each output class")
+        # Step label
+        self.step = QLabel("Step3: Network Analysis")
         self.step.setStyleSheet("font-size:25px; padding-top:90px;")
-
         self.content_layout.addWidget(self.step, alignment=Qt.AlignCenter)
 
         self.progress_bar = QLabel()
-        prog = QPixmap("comp2.png")
+        prog = QPixmap("./gui/comp2.png")
         self.progress_bar.setPixmap(prog)
         self.progress_bar.setScaledContents(True)
         self.progress_bar.setFixedSize(330, 26)
 
         self.content_layout.addWidget(self.progress_bar, alignment=Qt.AlignCenter)
+
+        # Circular progress bar
+        self.circular_progress = CircularProgress()
+        self.circular_progress.setFixedSize(300, 300)
+        # Create a layout to add margins
+        progress_layout = QVBoxLayout()
+        progress_layout.addStretch(0.3)  # Top margin
+        progress_layout.addWidget(self.circular_progress, alignment=Qt.AlignCenter)
+        progress_layout.addStretch(0.3)  # Bottom margin
+        self.content_layout.addLayout(progress_layout)
+
+        # Report button (initially hidden)
+        self.download_button = QPushButton("Download Report")
+        self.download_button.setFixedHeight(50)
+        self.download_button.setStyleSheet("""
+            QPushButton {
+                background-color: #2E2E2E;
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                border-radius: 12px;
+                padding: 0 20px;
+            }
+            QPushButton:hover {
+                background-color: #3A3A3A;
+            }
+        """)
+        self.download_button.setVisible(False)
+        self.content_layout.addWidget(self.download_button, alignment=Qt.AlignCenter)
+
+        # Progress logic
+        self.progress_value = 0
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_progress)
+        self.timer.start(100)
+
+    def update_progress(self):
+        if self.progress_value < 100:
+            self.progress_value += 1
+            self.circular_progress.setValue(self.progress_value)
+        else:
+            self.timer.stop()
+            self.download_button.setVisible(True)
 
 
     def resizeEvent(self, event):
@@ -178,7 +225,7 @@ class ScanPage(QWidget):
         self.content_layout.addWidget(self.upload_box)
 
         self.upload_icon = QLabel()
-        upload = QPixmap("upload.png")
+        upload = QPixmap("./gui/upload.png")
         self.upload_icon.setPixmap(upload)
         self.upload_icon.setScaledContents(True)
         self.upload_icon.setFixedSize(125, 170)
