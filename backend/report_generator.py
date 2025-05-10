@@ -1,4 +1,4 @@
-!pip install reportlab
+# pip install reportlab
 
 import json
 import matplotlib.pyplot as plt
@@ -59,9 +59,10 @@ def safe_format(value):
     return f"{value:.4f}" if isinstance(value, (float, int)) else "-"
 
 
-def generate_individual_report(model, output_dir, report_date):
+def generate_individual_report(model, output_dir):
     model_name = Path(model["path"]).stem
     last_modified = model["last_modified"]
+    report_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     results = model["detection_methods_used"]["results"]
     if not results:
         return

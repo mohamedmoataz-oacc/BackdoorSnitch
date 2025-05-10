@@ -1,3 +1,4 @@
+from backend.report_generator import generate_individual_report
 from free_eagle.free_eagle import FreeEagleDetector
 from backend.settings import config, Singleton
 from strip.strip import STRIPDetector
@@ -36,12 +37,13 @@ class BDS(metaclass=Singleton):
         try:
             model = self.save_results(model_path, results, params)
             print("Results have been saved successfully.")
-            self.generate_report(model)
         except Exception as e:
             print(f"Failed to save results: {e}")
     
-    def generate_report(self, model): ...
+    def generate_report(self, model, output_dir):
+        generate_individual_report(model, output_dir)
 
     def save_results(self, model_path, results, params):
-        config.save_model_results(model_path, results, params)
+        model = config.save_model_results(model_path, results, params)
         config.save()
+        return model
