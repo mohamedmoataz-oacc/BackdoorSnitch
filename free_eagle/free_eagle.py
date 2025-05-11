@@ -137,14 +137,15 @@ class FreeEagleDetector(BackdoorDetector):
         self.v = np.mean(self.mat_p, axis=0)
         Q1, Q3 = np.percentile(self.v, 25), np.percentile(self.v, 75)
         IQR = Q3 - Q1
-        m_trojaned = (max(self.v) - Q3) / IQR
+        m_trojaned = ((max(self.v) - Q3) / IQR) - 1.5
 
         # Some other metrics that can be used for anomaly detection
         lower_bound = (Q1 - 1.5 * IQR)
         upper_bound = (Q3 + 1.5 * IQR)
         print(f"Lower Bound: {lower_bound}, Upper Bound: {upper_bound}, m_trojaned: {m_trojaned}")
+        print(f"Trojaned: {not bool(lower_bound <= m_trojaned <= upper_bound)}")
         return (
-            not bool(lower_bound <= m_trojaned - 1.5 <= upper_bound),
+            not bool(lower_bound <= m_trojaned <= upper_bound),
             {
                 "m_trojaned": float(m_trojaned), "mat_p": self.mat_p.tolist(), "V": self.v.tolist(),
                 "lower_bound": float(lower_bound), "upper_bound": float(upper_bound)
@@ -167,5 +168,6 @@ class FreeEagleDetector(BackdoorDetector):
 
     def _create_random_ir(self, output_shape):
         # Generate a random tensor with the same shape as the output tensor
+        if output_shape[0] == 0: output_shape[0] = 1
         dummy_representation = np.random.rand(*output_shape).astype(np.float32)
         return dummy_representation

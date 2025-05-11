@@ -46,14 +46,14 @@ class ONNXModelWrapper(torch.nn.Module):
         super(ONNXModelWrapper, self).__init__()
         self.model = convert(model)
         self.clamp = clamp
+        self.model.eval()
 
     def forward(self, x: torch.Tensor):
         return self.model(x)
 
     def optimize_intermediate_representation(
-        self, IRc, target_class, lambda_l2, num_steps=250, learning_rate=0.001
+        self, IRc, target_class, lambda_l2, num_steps=100, learning_rate=0.001
     ):
-        self.model.eval()
         IRc.requires_grad = True
         
         target = torch.tensor([target_class])
