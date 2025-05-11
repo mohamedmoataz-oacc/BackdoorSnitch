@@ -7,6 +7,7 @@ from PySide6.QtCore import Qt, QTimer
 import sys
 import onnx
 from backend.bds import BDS
+from backend.settings import config
 from multiprocessing import Process
 from gui.progress_bar import CircularProgress  # import your custom widget
 
@@ -134,6 +135,7 @@ class ScanPage(QWidget):
             }
         """)
         self.download_button.setVisible(False)
+        self.download_button.clicked.connect(self.download_report)
         self.content_layout.addWidget(self.download_button, alignment=Qt.AlignCenter)
 
         # Progress logic
@@ -141,6 +143,10 @@ class ScanPage(QWidget):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_progress)
         self.timer.start(100)
+    
+    def download_report(self):
+        output_dir = None
+        self.backend.generate_report(config.get_model(self.model_path), output_dir)
 
     def update_progress(self):
         if self.progress_value < 100:
