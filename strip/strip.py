@@ -11,7 +11,10 @@ from detection_method import BackdoorDetector, ONNXModelWrapper
 
 # STRIP Detector class
 class STRIPDetector(BackdoorDetector):
-    def __init__(self, model_path, clean_images_dir, k=1.0):
+    def __init__(
+        self, model_path, clean_images_dir, k=1.0,
+        mean_entropy=None, std_entropy=None, threshold=None
+    ):
         """
         Initialize the STRIPDetector.
 
@@ -40,18 +43,27 @@ class STRIPDetector(BackdoorDetector):
             self.load_and_preprocess(path) for path in glob.glob(os.path.join(self.clean_images_dir, '*.jpg'))
         ]
 
-        entropies = []
-        for clean_tensor in tqdm(self.clean_image_tensors, desc="[*] Computing clean entropy stats for thresholding"):
-            e = self.compute_entropy(clean_tensor.unsqueeze(0))
-            entropies.append(e)
+        if mean_entropy is not None and std_entropy is not None and threshold is not None:
+            self.mean_entropy = mean_entropy
+            self.std_entropy = std_entropy
+            self.threshold = threshold
+        else:
+            # Compute entropy statistics
+            entropies = []
+            for clean_tensor in tqdm(self.clean_image_tensors, desc="[*] Computing clean entropy stats for thresholding"):
+                e = self.compute_entropy(clean_tensor.unsqueeze(0))
+                entropies.append(e)
 
-        self.mean_entropy = np.mean(entropies)
-        self.std_entropy = np.std(entropies)
-        self.threshold = max(0, self.mean_entropy - self.k * self.std_entropy)
+            self.mean_entropy = np.mean(entropies)
+            self.std_entropy = np.std(entropies)
+            self.threshold = max(0, self.mean_entropy - self.k * self.std_entropy)
         print(f"[*] Entropy Mean: {self.mean_entropy:.4f}, Std: {self.std_entropy:.4f}, Threshold: {self.threshold:.4f}")
     
     def get_params(self):
-        return {'k': self.k, 'clean_images_dir': self.clean_images_dir}
+        return {
+            'k': self.k, 'clean_images_dir': self.clean_images_dir, "mean_entropy": float(self.mean_entropy),
+            "std_entropy": float(self.std_entropy), "threshold": float(self.threshold)
+        }
 
     def load_and_preprocess(self, path):
         image = Image.open(path).convert('RGB')
