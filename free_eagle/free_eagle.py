@@ -10,7 +10,7 @@ class FreeEagleDetector(BackdoorDetector):
     def __init__(
         self, model_path: str, l_sep: int = None, classifier_after_relu: bool = False, **kwargs
     ):
-        super().__init__(model_path, logger=self.kwargs.pop('logger', None))
+        super().__init__(model_path, logger=kwargs.pop('logger', None))
         self.model = shape_inference.infer_shapes(self.model)
         self.kwargs = kwargs
         self.log_or_print(f"[*] FreeEagleDetector extra params: {self.kwargs}")

@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QFrame, QFileDialog, QMessageBox
+    QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QFrame, QFileDialog, QMessageBox, QTextEdit
 )
-from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QPixmap, QTextCursor
 from PySide6.QtCore import Qt, QTimer
 
 import sys
@@ -109,12 +109,13 @@ class ScanPage(QWidget):
         self.content_layout.addWidget(self.progress_bar, alignment=Qt.AlignCenter)
 
         # Circular progress bar
-        self.circular_progress = CircularProgress()
-        self.circular_progress.setFixedSize(300, 300)
+        self.logging_box = QTextEdit()
+        self.logging_box.setFixedSize(1000, 500)
+        # self.logging_box.setLineWrapMode(QTextEdit.NoWrap)
         # Create a layout to add margins
         progress_layout = QVBoxLayout()
         progress_layout.addStretch(0.3)  # Top margin
-        progress_layout.addWidget(self.circular_progress, alignment=Qt.AlignCenter)
+        progress_layout.addWidget(self.logging_box, alignment=Qt.AlignLeft)
         progress_layout.addStretch(0.3)  # Bottom margin
         self.content_layout.addLayout(progress_layout)
 
@@ -139,23 +140,31 @@ class ScanPage(QWidget):
         self.content_layout.addWidget(self.download_button, alignment=Qt.AlignCenter)
 
         # Progress logic
-        self.progress_value = 0
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_progress)
         self.timer.start(100)
     
     def download_report(self):
-        output_dir = None
+        output_dir = QFileDialog.getExistingDirectory(self, "Select directory to save report", "")
         self.backend.generate_report(config.get_model(self.model_path), output_dir)
 
     def update_progress(self):
-        if self.progress_value < 100:
-            self.progress_value += 1
-            self.circular_progress.setValue(self.progress_value)
-        
         if not self.backend_process.is_alive():
             self.download_button.setVisible(True)
             self.timer.stop()
+        else:
+            while True:
+                try:
+                    # Retrieve any available log record (non-blocking)
+                    record = self.backend.log_queue.get_nowait()
+                except Exception:
+                    # If no more messages are available, break out of the loop
+                    break
+
+                # Append the log message to the text widget
+                print(record.getMessage())
+                self.logging_box.append(record.getMessage())
+                self.logging_box.moveCursor(QTextCursor.End)
 
     def resizeEvent(self, event):
         self.upload_width = self.width() * 0.55

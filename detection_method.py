@@ -78,6 +78,7 @@ class ONNXModelWrapper(torch.nn.Module):
         )
         
         best_IRc = [None, float('inf')]
+        last_printed = ''
         for _ in progress_bar:
             optimizer.zero_grad()
 
@@ -99,7 +100,9 @@ class ONNXModelWrapper(torch.nn.Module):
                     IRc.clamp_(min=0)
             
             if self.logger and progress_bar.n % LOG_INTERVAL == 0:
-                self.log_or_print(str(progress_bar))
+                if str(progress_bar) != last_printed:
+                    self.log_or_print(str(progress_bar))
+                    last_printed = str(progress_bar)
 
         self.log_or_print(f"Loss: {best_IRc[1]}")
         return best_IRc[0]

@@ -27,6 +27,11 @@ class BDS(metaclass=Singleton):
         self.logger.info(f"The model {model_path} {'was added successfully' if added else 'already exists'}.")
 
     def analyze_model(self, model_path, chosen_detectors, **kwargs):
+        queue_handler = logging.handlers.QueueHandler(self.log_queue)
+        logger = logging.getLogger(__name__)
+        logger.addHandler(queue_handler)
+        logger.setLevel(logging.INFO)
+
         results = {}
         params = {}
         for c, detector in enumerate(chosen_detectors):
@@ -35,8 +40,8 @@ class BDS(metaclass=Singleton):
             detect_kwargs = kwargs.pop(f"{detector}_kwargs", {})
             detect_args = kwargs.pop(f"{detector}_args", [])
 
-            self.logger.info(f"[{c+1}/{len(chosen_detectors)}] Analyzing model using {detector} detector...")
-            detector_instance = self.detectors[detector](model_path, logger=self.logger, **detector_params)
+            logger.info(f"[{c+1}/{len(chosen_detectors)}] Analyzing model using {detector} detector...")
+            detector_instance = self.detectors[detector](model_path, logger=logger, **detector_params)
             results.update({detector: detector_instance.detect(*detect_args, **detect_kwargs)})
             params.update({detector: detector_instance.get_params()})
         return results, params

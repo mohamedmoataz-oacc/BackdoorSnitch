@@ -44,7 +44,7 @@ def poll_log_queue(root, text_widget, log_queue):
             break
         else:
             # Append the log message to the text widget
-            text_widget.insert(tk.END, record + "\n")
+            text_widget.insert(tk.END, record.getMessage() + "\n")
             text_widget.see(tk.END)
     
     # Schedule next poll after 100 milliseconds
@@ -70,9 +70,6 @@ def main():
     
     # Start the GUI event loop.
     root.mainloop()
-    
-    # Wait for the worker process to finish.
-    process.join()
 
 if __name__ == '__main__':
     main()
