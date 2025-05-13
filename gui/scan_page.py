@@ -89,7 +89,7 @@ class ScanPage(QWidget):
             target=self.backend.analyze,
             kwargs={
                 "model_path": self.model_path,
-                "free_eagle_params": {"optimizer_epochs": 10},
+                # "free_eagle_params": {"optimizer_epochs": 10},
                 "strip_params": {"clean_images_dir": self.data_dir},
             }
         )

@@ -12,7 +12,7 @@ from detection_method import BackdoorDetector, ONNXModelWrapper
 # STRIP Detector class
 class STRIPDetector(BackdoorDetector):
     def __init__(
-        self, model_path, clean_images_dir, k=1.0,
+        self, model_path, clean_images_dir, k=1.0, logger=None,
         mean_entropy=None, std_entropy=None, threshold=None
     ):
         """
@@ -28,7 +28,7 @@ class STRIPDetector(BackdoorDetector):
         thresholding purposes.
         """
 
-        super().__init__(model_path)
+        super().__init__(model_path, logger)
         self.model_torch = ONNXModelWrapper(self.model)
         self.clean_images_dir = clean_images_dir
         self.k = k
@@ -57,7 +57,10 @@ class STRIPDetector(BackdoorDetector):
             self.mean_entropy = np.mean(entropies)
             self.std_entropy = np.std(entropies)
             self.threshold = max(0, self.mean_entropy - self.k * self.std_entropy)
-        print(f"[*] Entropy Mean: {self.mean_entropy:.4f}, Std: {self.std_entropy:.4f}, Threshold: {self.threshold:.4f}")
+        
+        self.log_or_print(
+            f"[*] Entropy Mean: {self.mean_entropy:.4f}, Std: {self.std_entropy:.4f}, Threshold: {self.threshold:.4f}"
+        )
     
     def get_params(self):
         return {

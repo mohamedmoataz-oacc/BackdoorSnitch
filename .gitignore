@@ -1,5 +1,5 @@
 .vscode
 .venv
 *.pyc
-
+reports/
 generated_test_models/*

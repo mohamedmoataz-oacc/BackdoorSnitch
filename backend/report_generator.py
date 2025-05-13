@@ -1,17 +1,17 @@
-# pip install reportlab
-
 import json
-import matplotlib.pyplot as plt
+import tempfile
 import numpy as np
-from datetime import datetime
 from pathlib import Path
+from datetime import datetime
+import matplotlib.pyplot as plt
+
 from reportlab.lib.pagesizes import A4
-from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Image,
-                                Table, TableStyle, PageBreak, ListFlowable, ListItem)
+from reportlab.platypus import (
+    SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle, PageBreak, ListFlowable, ListItem
+)
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 from reportlab.lib.units import inch
-import tempfile
 
 
 def entropy_histogram(entropy_dict, title="Entropy Histogram"):
@@ -40,6 +40,16 @@ def poisoned_count_chart(entropy_dict):
     plt.close(fig)
     return temp.name
 
+def free_eagle_plots(mat_p, v):
+    fig, axs = plt.subplots(2, 1, figsize=(16, 8), gridspec_kw={'height_ratios': [3, 1]})
+    axs[0].matshow(mat_p, cmap='viridis')
+    axs[1].boxplot(v, vert=False, widths=0.5)
+    axs[0].set_title('FreeEagle Posteriors Matrix')
+    temp = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
+    plt.tight_layout()
+    plt.savefig(temp.name)
+    plt.close(fig)
+    return temp.name
 
 def strip_entropy_stats(entropy_dict):
     values = [v['entropy'] for v in entropy_dict.values()]
@@ -56,6 +66,7 @@ def strip_entropy_stats(entropy_dict):
 
 
 def safe_format(value):
+    value = float(value)
     return f"{value:.4f}" if isinstance(value, (float, int)) else "-"
 
 
@@ -67,7 +78,7 @@ def generate_individual_report(model, output_dir):
     if not results:
         return
 
-    pdf_path = Path(output_dir) / f"trojan_detection_report_{model_name}.pdf"
+    pdf_path = Path(output_dir or "./reports") / f"trojan_detection_report_{model_name}.pdf"
     doc = SimpleDocTemplate(str(pdf_path), pagesize=A4)
 
     styles = getSampleStyleSheet()
@@ -79,15 +90,15 @@ def generate_individual_report(model, output_dir):
     elements = []
     elements.append(Paragraph("Trojan Detection Report", styles['Title']))
     elements.append(Paragraph(f"<b>Model:</b> {model_name}", styles['Normal']))
-    elements.append(Paragraph(f"<b>Last Modified:</b> {last_modified}", styles['Normal']))
-    elements.append(Paragraph(f"<b>Generated:</b> {report_date}", styles['Normal']))
+    elements.append(Paragraph(f"<b>Metrics generation date:</b> {last_modified}", styles['Normal']))
+    elements.append(Paragraph(f"<b>Report generation date:</b> {report_date}", styles['Normal']))
     elements.append(Spacer(1, 12))
 
     summary_items = []
     for method, result in results.items():
         detected = result[0]
         style = styles['Detected'] if detected else styles['NotDetected']
-        summary_items.append(ListItem(Paragraph(f"{method.upper()}: {'Detected' if detected else 'Clean'}", style), leftIndent=10))
+        summary_items.append(ListItem(Paragraph(f"{method.upper()}: {'Trojan Detected' if detected else 'Clean'}", style), leftIndent=10))
 
     elements.append(Paragraph("Detection Summary:", styles['SubHeader']))
     elements.append(ListFlowable(summary_items, bulletType='bullet'))
@@ -133,6 +144,10 @@ def generate_individual_report(model, output_dir):
         elements.append(table)
         elements.append(Spacer(1, 12))
 
+        free_eagle_matrix_vis = free_eagle_plots(fe['mat_p'], fe['V'])
+        elements.append(Image(free_eagle_matrix_vis, width = 8 * inch, height = 4 * inch))
+        elements.append(Spacer(1, 12))
+
     doc.build(elements)
     print(f"Generated: {pdf_path}")
 
@@ -142,10 +157,8 @@ def generate_pdf_report(json_path="backend/database.json", output_dir="reports")
         data = json.load(f)
 
     Path(output_dir).mkdir(exist_ok=True)
-    report_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
     for model in data['models']:
-        generate_individual_report(model, output_dir, report_date)
+        generate_individual_report(model, output_dir)
 
 
 if __name__ == "__main__":

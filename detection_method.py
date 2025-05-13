@@ -1,3 +1,4 @@
+import os
 from onnx import load_model
 from tqdm import tqdm
 
@@ -8,10 +9,15 @@ from onnx2torch import convert
 
 
 class BackdoorDetector:
-    def __init__(self, model_path: str):
+    def __init__(self, model_path: str, logger=None):
         model = load_model(model_path)
         self.model = model
         self.device = 'cpu'
+        self.logger = logger
+    
+    def log_or_print(self, message):
+        if self.logger: self.logger.info(message)
+        else: print(message)
     
     def get_classes(self):
         output_tensor = self.model.graph.output[0]
@@ -35,7 +41,7 @@ class BackdoorDetector:
 
 
 class ONNXModelWrapper(torch.nn.Module):
-    def __init__(self, model, clamp=False):
+    def __init__(self, model, clamp=False, logger=None):
         """
         Initializes the ONNXModelWrapper class.
         
@@ -45,14 +51,19 @@ class ONNXModelWrapper(torch.nn.Module):
         """
         super(ONNXModelWrapper, self).__init__()
         self.model = convert(model)
+        self.logger = logger
         self.clamp = clamp
         self.model.eval()
 
     def forward(self, x: torch.Tensor):
         return self.model(x)
+    
+    def log_or_print(self, message):
+        if self.logger: self.logger.info(message)
+        else: print(message)
 
     def optimize_intermediate_representation(
-        self, IRc, target_class, lambda_l2, num_steps=100, learning_rate=0.001
+        self, IRc, target_class, lambda_l2, num_steps=500, learning_rate=0.001
     ):
         IRc.requires_grad = True
         
@@ -60,8 +71,14 @@ class ONNXModelWrapper(torch.nn.Module):
         optimizer = optim.Adam([IRc], lr=learning_rate, weight_decay=lambda_l2)
         loss_fn = nn.CrossEntropyLoss()
 
+        LOG_INTERVAL = num_steps // 10
+        progress_bar = tqdm(
+            range(num_steps), file=open(os.devnull, 'w') if self.logger else None,
+            desc="FreeEagle - Optimizing IRc for class " + str(target_class)
+        )
+        
         best_IRc = [None, float('inf')]
-        for step in tqdm(range(num_steps), desc="FreeEagle - Optimizing IRc for class " + str(target_class)):
+        for _ in progress_bar:
             optimizer.zero_grad()
 
             # Forward pass
@@ -81,8 +98,8 @@ class ONNXModelWrapper(torch.nn.Module):
                 with torch.no_grad():
                     IRc.clamp_(min=0)
             
-            # if (step + 1) % 100 == 0:
-            #     print(f'Step [{step + 1}/{num_steps}], Loss: {ce_loss.item()}')
+            if self.logger and progress_bar.n % LOG_INTERVAL == 0:
+                self.log_or_print(str(progress_bar))
 
-        print(f"Loss: {best_IRc[1]}")
+        self.log_or_print(f"Loss: {best_IRc[1]}")
         return best_IRc[0]

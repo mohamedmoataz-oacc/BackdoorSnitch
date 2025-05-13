@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from backend import settings
 from backend.bds import BDS
 from glob import glob
+import random
 
 
 if __name__ == "__main__":
@@ -12,11 +13,12 @@ if __name__ == "__main__":
     backend.add_model(model_path=model_path)
     backend.analyze(
         model_path=model_path,
-        free_eagle_params={"optimizer_epochs": 100},
+        free_eagle_params={"optimizer_epochs": 1000},
         strip_params={"clean_images_dir": "E:\\Desktop\\Final project\\models_conversion\\models_for_test_results\\cifar10_convnext_tiny_badnet_0_1\\strip_test"},
-        strip_args=(
+        strip_args=random.sample(
             glob("E:\\Desktop\\Final project\\models_conversion\\models_for_test_results\\cifar10_convnext_tiny_badnet_0_1\\strip_test\\badnet_trojan_test\\*.jpg") +
-            glob("E:\\Desktop\\Final project\\models_conversion\\models_for_test_results\\cifar10_convnext_tiny_badnet_0_1\\strip_test\\badnet_trojan_test\\*.png")
+            glob("E:\\Desktop\\Final project\\models_conversion\\models_for_test_results\\cifar10_convnext_tiny_badnet_0_1\\strip_test\\badnet_trojan_test\\*.png"),
+            100
         )
     )
 

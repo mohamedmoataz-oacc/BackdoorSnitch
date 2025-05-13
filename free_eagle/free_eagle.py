@@ -10,10 +10,10 @@ class FreeEagleDetector(BackdoorDetector):
     def __init__(
         self, model_path: str, l_sep: int = None, classifier_after_relu: bool = False, **kwargs
     ):
-        super().__init__(model_path)
+        super().__init__(model_path, logger=self.kwargs.pop('logger', None))
         self.model = shape_inference.infer_shapes(self.model)
         self.kwargs = kwargs
-        print(f"[*] FreeEagleDetector extra params: {self.kwargs}")
+        self.log_or_print(f"[*] FreeEagleDetector extra params: {self.kwargs}")
         if l_sep: self.classifier_after_relu = classifier_after_relu
         self.set_l_sep(l_sep)
     
@@ -34,9 +34,9 @@ class FreeEagleDetector(BackdoorDetector):
         if l_sep: self.l_sep = l_sep
         else:
             self.l_sep, self.classifier_after_relu = compute_split_layer_index(self.model)
-            print(f"[*] Chosen split layer index: {self.l_sep}{' (after ReLU)' if self.classifier_after_relu else ''}")
+            self.log_or_print(f"[*] Chosen split layer index: {self.l_sep}{' (after ReLU)' if self.classifier_after_relu else ''}")
         self.classifier = self._get_classifier_part()
-        self.optimizer = ONNXModelWrapper(self.classifier, self.classifier_after_relu)
+        self.optimizer = ONNXModelWrapper(self.classifier, self.classifier_after_relu, logger=self.logger)
 
         # This line is needed for now because we are using a version of ONNX (V1.17.0) that uses Opset 22,
         # which is still under development and not officially supported by the version of ONNX Runtime
@@ -142,8 +142,8 @@ class FreeEagleDetector(BackdoorDetector):
         # Some other metrics that can be used for anomaly detection
         lower_bound = (Q1 - 1.5 * IQR)
         upper_bound = (Q3 + 1.5 * IQR)
-        print(f"Lower Bound: {lower_bound}, Upper Bound: {upper_bound}, m_trojaned: {m_trojaned}")
-        print(f"Trojaned: {not bool(lower_bound <= m_trojaned <= upper_bound)}")
+        self.log_or_print(f"Lower Bound: {lower_bound}, Upper Bound: {upper_bound}, m_trojaned: {m_trojaned}")
+        self.log_or_print(f"Trojaned: {not bool(lower_bound <= m_trojaned <= upper_bound)}")
         return (
             not bool(lower_bound <= m_trojaned <= upper_bound),
             {
