@@ -78,7 +78,7 @@ class FreeEagleDetector(BackdoorDetector):
         irc = torch.tensor(self._create_random_ir(self._get_intermediate_output_shape()))
         optimized_IRc = self.optimizer.optimize_intermediate_representation(
             irc, target_class, scale_factor,
-            num_steps=self.kwargs.get('optimizer_epochs', 250),
+            num_steps=self.kwargs.get('optimizer_epochs', 500),
             learning_rate=self.kwargs.get('optimizer_learning_rate', 0.001)
         )
         return optimized_IRc.detach().cpu().numpy()
