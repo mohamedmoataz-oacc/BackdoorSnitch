@@ -9,29 +9,22 @@ from strip.strip import STRIPDetector
 
 
 class BDS(metaclass=Singleton):
-    def __init__(self):
+    def __init__(self, log=False):
         self.detectors = {
             'strip': STRIPDetector,
             'free_eagle': FreeEagleDetector
         }
 
-        self.log_queue = multiprocessing.Queue()
-        queue_handler = logging.handlers.QueueHandler(self.log_queue)
-
-        self.logger = logging.getLogger(__name__)
-        self.logger.addHandler(queue_handler)
-        self.logger.setLevel(logging.INFO)
+        self.log = log
+        if self.log: self.log_queue = multiprocessing.Queue()
     
     def add_model(self, model_path):
         added = config.add_model(model_path)
-        self.logger.info(f"The model {model_path} {'was added successfully' if added else 'already exists'}.")
+        config.save()
+        print(f"The model {model_path} {'was added successfully' if added else 'already exists'}.")
 
     def analyze_model(self, model_path, chosen_detectors, **kwargs):
-        queue_handler = logging.handlers.QueueHandler(self.log_queue)
-        logger = logging.getLogger(__name__)
-        logger.addHandler(queue_handler)
-        logger.setLevel(logging.INFO)
-
+        logger = kwargs.pop('logger', None)
         results = {}
         params = {}
         for c, detector in enumerate(chosen_detectors):
@@ -40,26 +33,40 @@ class BDS(metaclass=Singleton):
             detect_kwargs = kwargs.pop(f"{detector}_kwargs", {})
             detect_args = kwargs.pop(f"{detector}_args", [])
 
-            logger.info(f"[{c+1}/{len(chosen_detectors)}] Analyzing model using {detector} detector...")
+            self.log_or_print(
+                f"[{c+1}/{len(chosen_detectors)}] Analyzing model using {detector} detector...",
+                logger
+            )
             detector_instance = self.detectors[detector](model_path, logger=logger, **detector_params)
             results.update({detector: detector_instance.detect(*detect_args, **detect_kwargs)})
             params.update({detector: detector_instance.get_params()})
         return results, params
     
     def analyze(self, model_path, **kwargs):
+        if self.log:
+            queue_handler = logging.handlers.QueueHandler(self.log_queue)
+            logger = logging.getLogger(__name__)
+            logger.addHandler(queue_handler)
+            logger.setLevel(logging.INFO)
+        else: logger = None
+
         detectors = config.get("detection_methods")
-        self.logger.info(f"Detectors used: {detectors}")
-        results, params = self.analyze_model(model_path, detectors, **kwargs)
+        self.log_or_print(f"Detectors used: {detectors}", logger)
+        results, params = self.analyze_model(model_path, detectors, logger=logger, **kwargs)
         try:
             self.save_results(model_path, results, params)
-            self.logger.info("Results have been saved successfully.")
+            self.log_or_print("Results have been saved successfully.", logger)
         except Exception as e:
-            self.logger.info(f"Failed to save results: {e}")
+            self.log_or_print(f"Failed to save results: {e}", logger)
     
     def generate_report(self, model, output_dir):
-        generate_individual_report(model, output_dir)
+        return generate_individual_report(model, output_dir)
 
     def save_results(self, model_path, results, params):
         model = config.save_model_results(model_path, results, params)
         config.save()
         return model
+    
+    def log_or_print(self, message, logger=None):
+        if logger: logger.info(message)
+        else: print(message)

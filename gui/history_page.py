@@ -5,13 +5,11 @@ from gui.scan_entry import ScanEntryWidget
 
 
 class HistoryPage(QWidget):
-    def __init__(self, scan_data):
+    def __init__(self, scan_data, backend):
         super().__init__()
-        self.show_history(scan_data)
+        self.backend = backend
 
-    def show_history(self, scan_data):
         layout = QVBoxLayout(self)
-
         title = QLabel("📊 Scan History")
         title.setStyleSheet("font-size: 22px; font-weight: bold; padding: 10px;")
         layout.addWidget(title, alignment=Qt.AlignTop | Qt.AlignHCenter)
@@ -20,14 +18,17 @@ class HistoryPage(QWidget):
         scroll.setWidgetResizable(True)
 
         container = QWidget()
-        container_layout = QVBoxLayout()
-        container_layout.setSpacing(15)
+        self.container_layout = QVBoxLayout()
+        self.container_layout.setSpacing(15)
 
-        for entry in scan_data:
-            entry_widget = ScanEntryWidget(**entry)
-            container_layout.addWidget(entry_widget)
-
-        container.setLayout(container_layout)
+        container.setLayout(self.container_layout)
         scroll.setWidget(container)
-
         layout.addWidget(scroll)
+
+        self.show_history(scan_data)
+    
+    def show_history(self, scan_data):
+        for entry in scan_data:
+            entry_widget = ScanEntryWidget(self.backend, **entry)
+            self.container_layout.addWidget(entry_widget)
+

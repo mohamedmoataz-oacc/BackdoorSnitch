@@ -6,16 +6,17 @@ from PySide6.QtCore import Qt, QTimer
 
 import sys
 import onnx
+import netron
 from backend.bds import BDS
 from backend.settings import config
 from multiprocessing import Process
-from gui.progress_bar import CircularProgress  # import your custom widget
 
 
 class ScanPage(QWidget):
-    def __init__(self, backend: BDS):
+    def __init__(self, backend: BDS, history_page):
         super().__init__()
         self.backend = backend
+        self.history_page = history_page
 
         self.model_path = None
         self.data_dir = None
@@ -54,6 +55,29 @@ class ScanPage(QWidget):
         # upload box 
         self.create_input("ONNX file")
 
+        # Visualize button (initially hidden)
+        self.visualize_button = QPushButton("Visualize Model")
+        self.visualize_button.setFixedHeight(50)
+        self.visualize_button.setStyleSheet("""
+            QPushButton {
+                background-color: #2E2E2E;
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                border-radius: 12px;
+                padding: 0 20px;
+            }
+            QPushButton:hover {
+                background-color: #3A3A3A;
+            }
+        """)
+        self.visualize_button.setVisible(False)
+        self.visualize_button.clicked.connect(self.visualize_model)
+        self.content_layout.addWidget(self.visualize_button, alignment=Qt.AlignCenter)
+    
+    def visualize_model(self):
+        netron.start(self.model_path)
+
     def step2(self):
         self.step.setParent(None)
         self.progress_bar.setParent(None)
@@ -83,17 +107,7 @@ class ScanPage(QWidget):
         self.continue_button.setParent(None)
         self.upload_box.setParent(None)
 
-        # Send model and data_dir to backend
-        self.backend.add_model(self.model_path)
-        self.backend_process = Process(
-            target=self.backend.analyze,
-            kwargs={
-                "model_path": self.model_path,
-                # "free_eagle_params": {"optimizer_epochs": 10},
-                "strip_params": {"clean_images_dir": self.data_dir},
-            }
-        )
-        self.backend_process.start()
+        self.analyze_model()
 
         # Step label
         self.step = QLabel("Step3: Network Analysis")
@@ -144,13 +158,38 @@ class ScanPage(QWidget):
         self.timer.timeout.connect(self.update_progress)
         self.timer.start(100)
     
+    def analyze_model(self):
+        # Send model and data_dir to backend
+        self.backend.add_model(self.model_path)
+        self.backend_process = Process(
+            target=self.backend.analyze,
+            kwargs={
+                "model_path": self.model_path,
+                "free_eagle_params": {"optimizer_epochs": 10},
+                "strip_params": {"clean_images_dir": self.data_dir}
+            }
+        )
+        self.backend_process.start()
+    
     def download_report(self):
         output_dir = QFileDialog.getExistingDirectory(self, "Select directory to save report", "")
-        self.backend.generate_report(config.get_model(self.model_path), output_dir)
+        generated = self.backend.generate_report(config.get_model(self.model_path), output_dir)
+        if generated:
+            QMessageBox.information(
+                self, "Saved",
+                f"The report was generated and saved successfully!"
+            )
+        else:
+            QMessageBox.critical(
+                self, "Error",
+                f"Failed to generate the report!"
+            )
 
     def update_progress(self):
         if not self.backend_process.is_alive():
+            config.load()
             self.download_button.setVisible(True)
+            self.history_page.show_history(config.get_model(self.model_path))
             self.timer.stop()
         else:
             while True:
@@ -200,6 +239,7 @@ class ScanPage(QWidget):
 
             self.contents_layout.addWidget(self.continue_button, alignment=Qt.AlignRight)
             self.model_path = file_path
+            self.visualize_button.setVisible(True)
         except Exception as e:
             self.continue_button.setParent(None)
             QMessageBox.critical(self, "Error", f"Invalid ONNX file!\n{str(e)}")
@@ -288,7 +328,7 @@ class ScanPage(QWidget):
         except TypeError:
             pass  # No previous connection, safe to proceed
 
-        if type.lower() == "data directory":
+        if type.lower() == "data directory" or "strip" not in config.get_detectors_used():
             self.continue_button.clicked.connect(self.step3)
         else:
             self.continue_button.clicked.connect(self.step2)

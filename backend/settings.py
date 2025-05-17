@@ -11,6 +11,10 @@ class Singleton(type):
 
 class Config(metaclass=Singleton):
     def __init__(self):
+        self.load()
+    
+    def load(self):
+        print("Loading config...")
         with open("backend/database.json", 'r') as f:
             self.settings = json.load(f)
     
@@ -24,6 +28,9 @@ class Config(metaclass=Singleton):
         print("Saving config...")
         with open("backend/database.json", 'w') as f:
             json.dump(self.settings, f, indent=4)
+    
+    def get_detectors_used(self):
+        return self.settings["detection_methods"]
     
     def add_model(self, model_path):
         if model_path in [m["path"] for m in self.settings["models"]]: return
@@ -46,6 +53,7 @@ class Config(metaclass=Singleton):
                 return model
     
     def save_model_results(self, model_path, results, params):
+        print("Saving model results...")
         models = self.settings["models"]
         for i, m in enumerate(models):
             if m["path"] == model_path:

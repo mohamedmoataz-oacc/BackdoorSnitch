@@ -76,7 +76,8 @@ def generate_individual_report(model, output_dir):
     report_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     results = model["detection_methods_used"]["results"]
     if not results:
-        return
+        print("No results found for this model.")
+        return False
 
     pdf_path = Path(output_dir or "./reports") / f"trojan_detection_report_{model_name}.pdf"
     doc = SimpleDocTemplate(str(pdf_path), pagesize=A4)
@@ -150,6 +151,7 @@ def generate_individual_report(model, output_dir):
 
     doc.build(elements)
     print(f"Generated: {pdf_path}")
+    return True
 
 
 def generate_pdf_report(json_path="backend/database.json", output_dir="reports"):

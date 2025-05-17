@@ -87,16 +87,15 @@ class MainWindow(QWidget):
         self.stacked_widget = QStackedWidget()
         
         # Scan page
-        self.scan_page = ScanPage(self.backend)
+        scan_data = config.settings["models"]
+        self.history_page = HistoryPage(scan_data, self.backend)
+        self.scan_page = ScanPage(self.backend, self.history_page)
         self.stacked_widget.addWidget(self.scan_page)
+        self.stacked_widget.addWidget(self.history_page)
         
         # Settings page
         self.settings_page = SettingsPage(config)
         self.stacked_widget.addWidget(self.settings_page)
-        
-        scan_data = config.settings["models"]
-        self.history_page = HistoryPage(scan_data)
-        self.stacked_widget.addWidget(self.history_page)
 
         # Create navigation buttons
         self.scan_button = self.create_button("Scan")     
@@ -104,13 +103,13 @@ class MainWindow(QWidget):
         self.mark_button(self.scan_button)
         buttons_layout.addWidget(self.scan_button)
 
-        self.settings_button = self.create_button("Settings")     
-        self.settings_button.clicked.connect(lambda: self.switch_page(1))
-        buttons_layout.addWidget(self.settings_button)
-
         self.history_button = self.create_button("History")     
-        self.history_button.clicked.connect(lambda: self.switch_page(2))
+        self.history_button.clicked.connect(lambda: self.switch_page(1))
         buttons_layout.addWidget(self.history_button)
+
+        self.settings_button = self.create_button("Settings")     
+        self.settings_button.clicked.connect(lambda: self.switch_page(2))
+        buttons_layout.addWidget(self.settings_button)
 
         sidebar_layout.addWidget(buttons_container)
         self.sidebar.setLayout(sidebar_layout)
