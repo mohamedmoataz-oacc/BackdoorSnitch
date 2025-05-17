@@ -31,4 +31,3 @@ class HistoryPage(QWidget):
         for entry in scan_data:
             entry_widget = ScanEntryWidget(self.backend, **entry)
             self.container_layout.addWidget(entry_widget)
-

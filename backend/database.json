@@ -1,6 +1,7 @@
 {
     "detection_methods": [
-        "free_eagle"
+        "free_eagle",
+        "strip"
     ],
     "models": [
         {
