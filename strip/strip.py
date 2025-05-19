@@ -40,7 +40,11 @@ class STRIPDetector(BackdoorDetector):
             transforms.Normalize(mean=[0.4914, 0.4822, 0.4465], std=[0.2023, 0.1994, 0.2010])
         ])
         self.clean_image_tensors = [
-            self.load_and_preprocess(path) for path in glob.glob(os.path.join(self.clean_images_dir, '*.jpg'))
+            self.load_and_preprocess(path)
+            for path in (
+                glob.glob(os.path.join(self.clean_images_dir, '*.jpg')) +
+                glob.glob(os.path.join(self.clean_images_dir, '*.png'))
+            )
         ]
 
         if mean_entropy is not None and std_entropy is not None and threshold is not None:
