@@ -142,10 +142,12 @@ class FreeEagleDetector(BackdoorDetector):
         # Some other metrics that can be used for anomaly detection
         lower_bound = (Q1 - 1.5 * IQR)
         upper_bound = (Q3 + 1.5 * IQR)
+        is_trojaned = any([i < lower_bound or i > upper_bound for i in self.v])
+
         self.log_or_print(f"Lower Bound: {lower_bound}, Upper Bound: {upper_bound}, m_trojaned: {m_trojaned}")
-        self.log_or_print(f"Trojaned: {not bool(lower_bound <= m_trojaned <= upper_bound)}")
+        self.log_or_print(f"Trojaned: {is_trojaned}")
         return (
-            not bool(lower_bound <= m_trojaned <= upper_bound),
+            is_trojaned,
             {
                 "m_trojaned": float(m_trojaned), "mat_p": self.mat_p.tolist(), "V": self.v.tolist(),
                 "lower_bound": float(lower_bound), "upper_bound": float(upper_bound)
