@@ -12,8 +12,8 @@ from detection_method import BackdoorDetector, ONNXModelWrapper
 # STRIP Detector class
 class STRIPDetector(BackdoorDetector):
     def __init__(
-        self, model_path, clean_images_dir, k=1.0, logger=None,
-        mean_entropy=None, std_entropy=None, threshold=None
+        self, model_path, clean_images_dir, k=1.0, image_size: tuple = None,
+        logger=None, mean_entropy=None, std_entropy=None, threshold=None
     ):
         """
         Initialize the STRIPDetector.
@@ -34,11 +34,13 @@ class STRIPDetector(BackdoorDetector):
         self.k = k
 
         # Define image transform
-        self.transform = transforms.Compose([
-            # transforms.Resize((32, 32)),
+        image_transforms = [
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.4914, 0.4822, 0.4465], std=[0.2023, 0.1994, 0.2010])
-        ])
+        ]
+        if image_size is not None: image_transforms.insert(0, transforms.Resize(image_size))
+        self.transform = transforms.Compose(image_transforms)
+
         self.clean_image_tensors = [
             self.load_and_preprocess(path)
             for path in (
