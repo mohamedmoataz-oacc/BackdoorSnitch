@@ -101,7 +101,12 @@ class FreeEagleDetector(BackdoorDetector):
         """
         mat_p = []
         for representation in intermediate_representations:
-            output = self.session.run(None, {self.session.get_inputs()[0].name: representation})[0]
+            output = None
+            for i in representation:
+                if output is None:
+                    output = self.session.run(None, {self.session.get_inputs()[0].name: i})[0]
+                else: output += self.session.run(None, {self.session.get_inputs()[0].name: i})[0]
+            output = output / len(representation)
             mat_p.append(output)
         mat_p = np.array(mat_p).transpose()
         return mat_p
@@ -124,25 +129,30 @@ class FreeEagleDetector(BackdoorDetector):
         # Generate dummy intermediate representations. (lines 3-6 in FreeEagle algorithm)
         representations = []
         for target_class in self.get_classes():
-            IRc1 = self.generate_dummy_intermediate_rep(target_class)
-            IRc2 = self.generate_dummy_intermediate_rep(target_class)
-            IRcavg = (IRc1 + IRc2) / 2
-            representations.append(IRcavg)
+            IRcs = []
+            num_IRcs = self.kwargs.get('num_IRcs', 2)
+            for i in range(num_IRcs):
+                self.log_or_print(f"[{i+1}/{num_IRcs}]")
+                IRcs.append(self.generate_dummy_intermediate_rep(target_class))
+            representations.append(IRcs)
         
         # Compute the  the posteriors matrix. (line 7 in FreeEagle algorithm)
         self.mat_p = np.squeeze(self.generate_posteriors_matrix(representations))
 
         # Posterior Outlier Detection and Anomaly Metric Computation (lines 8-13 in FreeEagle algorithm)
         np.fill_diagonal(self.mat_p, 0)
-        self.v = np.mean(self.mat_p, axis=0)
+        self.v = np.mean(self.mat_p, axis=1)
         Q1, Q3 = np.percentile(self.v, 25), np.percentile(self.v, 75)
         IQR = Q3 - Q1
+        
         m_trojaned = ((max(self.v) - Q3) / IQR) - 1.5
-
-        # Some other metrics that can be used for anomaly detection
         lower_bound = (Q1 - 1.5 * IQR)
         upper_bound = (Q3 + 1.5 * IQR)
-        is_trojaned = any([i < lower_bound or i > upper_bound for i in self.v])
+
+        is_trojaned = (
+            not (lower_bound <= m_trojaned <= upper_bound) or
+            any([i < lower_bound or i > upper_bound for i in self.v])
+        )
 
         self.log_or_print(f"Lower Bound: {lower_bound}, Upper Bound: {upper_bound}, m_trojaned: {m_trojaned}")
         self.log_or_print(f"Trojaned: {is_trojaned}")

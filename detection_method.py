@@ -15,9 +15,9 @@ class BackdoorDetector:
         self.device = 'cpu'
         self.logger = logger
     
-    def log_or_print(self, message):
+    def log_or_print(self, message, **kwargs):
         if self.logger: self.logger.info(message)
-        else: print(message)
+        else: print(message, **kwargs)
     
     def get_classes(self):
         output_tensor = self.model.graph.output[0]

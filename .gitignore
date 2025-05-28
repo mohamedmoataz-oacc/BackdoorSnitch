@@ -2,4 +2,5 @@
 .venv
 *.pyc
 reports/
+tests/
 generated_test_models/*
