@@ -8,8 +8,8 @@ test_files = glob('./tests/*.json')
 
 free_eagle_accuracy = 0
 free_eagle_fp_rate = 0
-mean_strip_accuracy = 0
-mean_strip_fp_rate = 0
+
+total_strip_results = {"false positives": 0, "true positives": 0, "false negatives": 0, "true negatives": 0}
 
 for json_file in test_files:
     print(json_file)
@@ -35,17 +35,7 @@ for json_file in test_files:
         else: free_eagle_fp_rate += 1
     elif not new_is_trojaned and "clean" in json_file: free_eagle_accuracy += 1
 
-    # print("Old:")
-    # print("Trojaned model detected:", free_eagle_is_trojaned)
-    # print(
-    #     "Trojaned model detected (based on m_trojaned):",
-    #     not (free_eagle_results['lower_bound'] <= free_eagle_results['m_trojaned'] <= free_eagle_results['lower_bound'])
-    # )
-    # print(f"Old_V: {free_eagle_results['V']}")
-    # print(f"Lower bound: {free_eagle_results['lower_bound']}, M_trojaned: {free_eagle_results['m_trojaned']}, Upper bound: {free_eagle_results['upper_bound']}")
-    # print("New:")
     print("Trojaned model detected:", new_is_trojaned)
-    # print(f"New_V: {other_v}")
     print(f"Lower bound: {new_lower_bound}, M_trojaned: {new_m_trojaned}, Upper bound: {new_upper_bound}")
     print('\n')
 
@@ -56,36 +46,51 @@ for json_file in test_files:
     # axs[0].set_title('FreeEagle Posteriors Matrix')
     # plt.tight_layout()
 
-    strip_results = model['detection_methods_used']['results']['strip']
-    strip_is_trojaned, strip_results = strip_results[0], strip_results[1]
-    results = {"false positives": 0, "true positives": 0, "false negatives": 0, "true negatives": 0}
+    if "strip" in model['detection_methods_used']['results']:
+        strip_results = model['detection_methods_used']['results']['strip']
+        strip_is_trojaned, strip_results = strip_results[0], strip_results[1]
+        results = {"false positives": 0, "true positives": 0, "false negatives": 0, "true negatives": 0}
 
-    model_trojaned = True
-    for k, v in strip_results.items():
-        k = k.split('/')[-1]
-        if k.startswith('p_') and model_trojaned:
-            results["true positives"] += 1 if v["poisoned"] else 0
-            results["false negatives"] += 1 if not v["poisoned"] else 0
-        else:
-            results["false positives"] += 1 if v["poisoned"] else 0
-            results["true negatives"] += 1 if not v["poisoned"] else 0
+        model_trojaned = True if "clean" not in json_file else False
+        for k, v in strip_results.items():
+            k = k.split('/')[-1]
+            if k.startswith('p_') and model_trojaned:
+                results["true positives"] += 1 if v["poisoned"] else 0
+                total_strip_results["true positives"] += 1 if v["poisoned"] else 0
+                results["false negatives"] += 1 if not v["poisoned"] else 0
+                total_strip_results["false negatives"] += 1 if not v["poisoned"] else 0
+            else:
+                results["false positives"] += 1 if v["poisoned"] else 0
+                total_strip_results["false positives"] += 1 if v["poisoned"] else 0
+                results["true negatives"] += 1 if not v["poisoned"] else 0
+                total_strip_results["true negatives"] += 1 if not v["poisoned"] else 0
 
-    print("Strip Results:", results)
-    acc = round((results["true positives"] + results["true negatives"]) / sum(list(results.values())), 2)
-    mean_strip_accuracy += acc
-    print("Strip Accuracy:", acc)
-    fp = round(results["false positives"] / sum(list(results.values())), 2)
-    mean_strip_fp_rate += fp
-    print("Strip FP rate:", fp)
-    print("Trojaned model detected:", strip_is_trojaned)
+        if sum(list(results.values())):
+            print("Strip Results:", results)
+            acc = round((results["true positives"] + results["true negatives"]) / sum(list(results.values())), 2)
+            print("Strip Accuracy:", acc)
+            fp = round(results["false positives"] / sum(list(results.values())), 2)
+            print("Strip FP rate:", fp)
     print("-----------------------------------------------------------")
     # plt.show()
 
 free_eagle_accuracy = round(free_eagle_accuracy / len(test_files), 2)
 free_eagle_fp_rate = round(free_eagle_fp_rate / len(test_files), 2)
-mean_strip_accuracy = round(mean_strip_accuracy / len(test_files), 2)
-mean_strip_fp_rate = round(mean_strip_fp_rate / len(test_files), 2)
+print(f"Number of test models: {len(test_files)}")
 print("FreeEagle Accuracy:", free_eagle_accuracy)
 print("FreeEagle FP rate:", free_eagle_fp_rate)
-print("Mean Strip Accuracy:", mean_strip_accuracy)
-print("Mean Strip FP rate:", mean_strip_fp_rate)
+
+print("Total Strip Results:", total_strip_results)
+print(f"""Total images tested: {
+    total_strip_results['false positives'] + total_strip_results['true positives'] +
+    total_strip_results['false negatives'] + total_strip_results['true negatives']
+}""")
+strip_acc = round(
+    (total_strip_results["true positives"] + total_strip_results["true negatives"]) /
+    sum(list(total_strip_results.values())), 2
+)
+print("Total Strip Accuracy:", strip_acc)
+fp = round(total_strip_results["false positives"] / sum(list(total_strip_results.values())), 2)
+print("Total Strip FP rate:", fp)
+print("-----------------------------------------------------------")
+print(f"BackdoorSnitch total accuracy: {round(1 - ((1 - free_eagle_accuracy) * (1 - strip_acc)), 2)}")

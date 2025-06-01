@@ -50,12 +50,12 @@ class SettingsPage(QFrame):
         methods_layout.setSpacing(25)  # Increased spacing between methods
         
         # Method checkboxes
-        self.freeagle_check = self._create_method_checkbox(
-            "FreeEagle", 
+        self.netcop_check = self._create_method_checkbox(
+            "NetCop", 
             "Neural trojan detection during validation"
         )
-        self.freeagle_check.findChild(QCheckBox).setChecked(
-            "free_eagle" in self.config.settings.get("detection_methods")
+        self.netcop_check.findChild(QCheckBox).setChecked(
+            "netcop" in self.config.settings.get("detection_methods")
         )
         
         self.strip_check = self._create_method_checkbox(
@@ -66,7 +66,7 @@ class SettingsPage(QFrame):
             "strip" in self.config.settings.get("detection_methods")
         )
         
-        methods_layout.addWidget(self.freeagle_check)
+        methods_layout.addWidget(self.netcop_check)
         methods_layout.addWidget(self.strip_check)
         
         # Add spacer at bottom to push content up
@@ -159,8 +159,8 @@ class SettingsPage(QFrame):
     def save_settings(self):
         """Collect and save the selected methods"""
         selected_methods = []
-        if self.freeagle_check.findChild(QCheckBox).isChecked():
-            selected_methods.append("free_eagle")
+        if self.netcop_check.findChild(QCheckBox).isChecked():
+            selected_methods.append("netcop")
         if self.strip_check.findChild(QCheckBox).isChecked():
             selected_methods.append("strip")
         

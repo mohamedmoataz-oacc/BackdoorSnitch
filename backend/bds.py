@@ -3,7 +3,7 @@ import multiprocessing
 import logging.handlers
 
 from backend.report_generator import generate_individual_report
-from free_eagle.free_eagle import FreeEagleDetector
+from netcop.netcop import NetCopDetector
 from backend.settings import config, Singleton
 from strip.strip import STRIPDetector
 
@@ -12,7 +12,7 @@ class BDS(metaclass=Singleton):
     def __init__(self, log=False):
         self.detectors = {
             'strip': STRIPDetector,
-            'free_eagle': FreeEagleDetector
+            'netcop': NetCopDetector
         }
 
         self.log = log

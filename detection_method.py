@@ -74,7 +74,7 @@ class ONNXModelWrapper(torch.nn.Module):
         LOG_INTERVAL = num_steps // 10
         progress_bar = tqdm(
             range(num_steps), file=open(os.devnull, 'w') if self.logger else None,
-            desc="FreeEagle - Optimizing IRc for class " + str(target_class)
+            desc="NetCop - Optimizing IRc for class " + str(target_class)
         )
         
         best_IRc = [None, float('inf')]

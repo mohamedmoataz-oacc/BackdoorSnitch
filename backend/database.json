@@ -1,6 +1,6 @@
 {
     "detection_methods": [
-        "free_eagle",
+        "netcop",
         "strip"
     ],
     "models": [
