@@ -1,12 +1,27 @@
 {
     "detection_methods": [
-        "netcop",
-        "strip"
+        "netcop"
     ],
     "models": [
         {
             "path": "path/to/example.onnx",
             "last_modified": "2025-05-07 00:00:00",
+            "detection_methods_used": {
+                "params": {},
+                "results": {}
+            }
+        },
+        {
+            "path": "E:/Desktop/Final project/models_conversion/models_for_test_results/cifar10_convnext_tiny_badnet_0_1/cifar10_convnext_tiny_badnet_0_1.onnx",
+            "last_modified": "2025-06-07 22:56:44",
+            "detection_methods_used": {
+                "params": {},
+                "results": {}
+            }
+        },
+        {
+            "path": "E:/Desktop/Final project/models_conversion/models/cifar10_convnext_tiny_badnet_0_05.onnx",
+            "last_modified": "2025-06-08 14:23:14",
             "detection_methods_used": {
                 "params": {},
                 "results": {}

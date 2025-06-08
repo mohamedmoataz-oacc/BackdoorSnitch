@@ -4,3 +4,4 @@
 reports/
 tests/
 generated_test_models/*
+fix.py

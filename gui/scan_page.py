@@ -338,7 +338,6 @@ class ScanPage(QWidget):
         self.update()
 
 
-
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = ScanPage()

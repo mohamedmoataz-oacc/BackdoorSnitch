@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 
 test_files = glob('./tests/*.json')
 
-free_eagle_accuracy = 0
-free_eagle_fp_rate = 0
+netcop_accuracy = 0
+netcop_fp_rate = 0
 
 total_strip_results = {"false positives": 0, "true positives": 0, "false negatives": 0, "true negatives": 0}
 
@@ -16,10 +16,10 @@ for json_file in test_files:
     with open(json_file) as file:
         model = json.load(file)["models"][-1]
 
-    free_eagle_results = model['detection_methods_used']['results']['free_eagle']
-    free_eagle_is_trojaned, free_eagle_results = free_eagle_results[0], free_eagle_results[1]
+    netcop_results = model['detection_methods_used']['results']['netcop']
+    netcop_is_trojaned, netcop_results = netcop_results[0], netcop_results[1]
 
-    other_v = [sum(i)/len(free_eagle_results['mat_p']) for i in free_eagle_results['mat_p']]
+    other_v = [sum(i)/len(netcop_results['mat_p']) for i in netcop_results['mat_p']]
     Q1, Q3 = np.percentile(other_v, 25), np.percentile(other_v, 75)
     IQR = Q3 - Q1
     new_m_trojaned = ((max(other_v) - Q3) / IQR) - 1.5
@@ -31,20 +31,22 @@ for json_file in test_files:
     )
 
     if new_is_trojaned:
-        if "clean" not in json_file: free_eagle_accuracy += 1
-        else: free_eagle_fp_rate += 1
-    elif not new_is_trojaned and "clean" in json_file: free_eagle_accuracy += 1
+        if "clean" not in json_file: netcop_accuracy += 1
+        else: netcop_fp_rate += 1
+    elif not new_is_trojaned and "clean" in json_file: netcop_accuracy += 1
 
     print("Trojaned model detected:", new_is_trojaned)
     print(f"Lower bound: {new_lower_bound}, M_trojaned: {new_m_trojaned}, Upper bound: {new_upper_bound}")
     print('\n')
 
-    # fig, axs = plt.subplots(3, 1, figsize=(16, 8), gridspec_kw={'height_ratios': [3, 1, 1]})
-    # axs[0].matshow(free_eagle_results['mat_p'], cmap='viridis')
-    # axs[1].boxplot(free_eagle_results['V'], vert=False, widths=0.5)
-    # axs[2].boxplot(other_v, vert=False, widths=0.5)
-    # axs[0].set_title('FreeEagle Posteriors Matrix')
-    # plt.tight_layout()
+    # if "clean" not in json_file and not new_is_trojaned:
+    if "cifar10_vgg19_bn_lira_0_1" in json_file:
+        fig, axs = plt.subplots(2, 1, figsize=(16, 8), gridspec_kw={'height_ratios': [3, 1]})
+        axs[0].matshow(netcop_results['mat_p'], cmap='viridis')
+        axs[1].boxplot(other_v, vert=False, widths=0.5)
+        axs[0].set_title('NetCop Posteriors Matrix')
+        plt.tight_layout()
+        plt.show()
 
     if "strip" in model['detection_methods_used']['results']:
         strip_results = model['detection_methods_used']['results']['strip']
@@ -72,13 +74,12 @@ for json_file in test_files:
             fp = round(results["false positives"] / sum(list(results.values())), 2)
             print("Strip FP rate:", fp)
     print("-----------------------------------------------------------")
-    # plt.show()
 
-free_eagle_accuracy = round(free_eagle_accuracy / len(test_files), 2)
-free_eagle_fp_rate = round(free_eagle_fp_rate / len(test_files), 2)
+netcop_accuracy = round(netcop_accuracy / len(test_files), 2)
+netcop_fp_rate = round(netcop_fp_rate / len(test_files), 2)
 print(f"Number of test models: {len(test_files)}")
-print("FreeEagle Accuracy:", free_eagle_accuracy)
-print("FreeEagle FP rate:", free_eagle_fp_rate)
+print("NetCop Accuracy:", netcop_accuracy)
+print("NetCop FP rate:", netcop_fp_rate)
 
 print("Total Strip Results:", total_strip_results)
 print(f"""Total images tested: {
@@ -93,4 +94,4 @@ print("Total Strip Accuracy:", strip_acc)
 fp = round(total_strip_results["false positives"] / sum(list(total_strip_results.values())), 2)
 print("Total Strip FP rate:", fp)
 print("-----------------------------------------------------------")
-print(f"BackdoorSnitch total accuracy: {round(1 - ((1 - free_eagle_accuracy) * (1 - strip_acc)), 2)}")
+print(f"BackdoorSnitch total accuracy: {round(1 - ((1 - netcop_accuracy) * (1 - strip_acc)), 2)}")
