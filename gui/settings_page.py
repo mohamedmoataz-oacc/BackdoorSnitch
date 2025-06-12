@@ -57,12 +57,11 @@ class SettingsPage(QFrame):
             "Neural trojan detection during validation"
         )
         self.set_parms = QPushButton("Set Parameters")
-
         self.netcop_check.findChild(QCheckBox).setChecked(
             "netcop" in self.config.settings.get("detection_methods")
         )
-
         self.netcop_check.findChild(QCheckBox).stateChanged.connect(self.toggle_parameters)
+        self.toggle_parameters()
 
         
         self.strip_check = self._create_method_checkbox(
@@ -150,8 +149,6 @@ class SettingsPage(QFrame):
         self.checkbox = QCheckBox(title)
         self.checkbox.setStyleSheet("font-weight: bold;")
         self.checkbox.setCursor(Qt.PointingHandCursor)
-
-
         
         # Description
         self.desc_label = QLabel(description)
@@ -168,12 +165,9 @@ class SettingsPage(QFrame):
         if title == "NetCop":
             self.parameter_controls = ParameterControls()
             self.layout.addWidget(self.parameter_controls)
-            self.parameter_controls.hide()
 
-        
         return self.container
     
-
     def toggle_parameters(self):
         if self.netcop_check.findChild(QCheckBox).isChecked():
             self.parameter_controls.show()
