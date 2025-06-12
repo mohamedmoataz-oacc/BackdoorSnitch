@@ -40,13 +40,13 @@ for json_file in test_files:
     print('\n')
 
     # if "clean" not in json_file and not new_is_trojaned:
-    if "cifar10_vgg19_bn_lira_0_1" in json_file:
-        fig, axs = plt.subplots(2, 1, figsize=(16, 8), gridspec_kw={'height_ratios': [3, 1]})
-        axs[0].matshow(netcop_results['mat_p'], cmap='viridis')
-        axs[1].boxplot(other_v, vert=False, widths=0.5)
-        axs[0].set_title('NetCop Posteriors Matrix')
-        plt.tight_layout()
-        plt.show()
+    # if "cifar10_vgg19_bn_lira_0_1" in json_file:
+    #     fig, axs = plt.subplots(2, 1, figsize=(16, 8), gridspec_kw={'height_ratios': [3, 1]})
+    #     axs[0].matshow(netcop_results['mat_p'], cmap='viridis')
+    #     axs[1].boxplot(other_v, vert=False, widths=0.5)
+    #     axs[0].set_title('NetCop Posteriors Matrix')
+    #     plt.tight_layout()
+    #     plt.show()
 
     if "strip" in model['detection_methods_used']['results']:
         strip_results = model['detection_methods_used']['results']['strip']
@@ -95,3 +95,4 @@ fp = round(total_strip_results["false positives"] / sum(list(total_strip_results
 print("Total Strip FP rate:", fp)
 print("-----------------------------------------------------------")
 print(f"BackdoorSnitch total accuracy: {round(1 - ((1 - netcop_accuracy) * (1 - strip_acc)), 2)}")
+print('\n\n\n')

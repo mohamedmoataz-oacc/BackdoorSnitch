@@ -18,7 +18,12 @@ class NetCopDetector(BackdoorDetector):
         self.set_l_sep(l_sep)
     
     def get_params(self):
-        return {'l_sep': self.l_sep, 'classifier_after_relu': self.classifier_after_relu}
+        return {
+            'l_sep': self.l_sep,
+            'classifier_after_relu': self.classifier_after_relu,
+            'optimizer_epochs': self.kwargs.get('optimizer_epochs', 500),
+            'num_IRcs': self.kwargs.get('num_IRcs', 2)
+        }
     
     def set_l_sep(self, l_sep: int = None):
         """
@@ -78,8 +83,7 @@ class NetCopDetector(BackdoorDetector):
         irc = torch.tensor(self._create_random_ir(self._get_intermediate_output_shape()))
         optimized_IRc = self.optimizer.optimize_intermediate_representation(
             irc, target_class, scale_factor,
-            num_steps=self.kwargs.get('optimizer_epochs', 500),
-            learning_rate=self.kwargs.get('optimizer_learning_rate', 0.001)
+            num_steps=self.kwargs.get('optimizer_epochs', 500)
         )
         return optimized_IRc.detach().cpu().numpy()
     
@@ -136,11 +140,11 @@ class NetCopDetector(BackdoorDetector):
                 IRcs.append(self.generate_dummy_intermediate_rep(target_class))
             representations.append(IRcs)
         
-        # Compute the  the posteriors matrix.
+        # Compute the posteriors matrix.
         self.mat_p = np.squeeze(self.generate_posteriors_matrix(representations))
+        np.fill_diagonal(self.mat_p, 0)
 
         # Posterior Outlier Detection and Anomaly Metric Computation
-        np.fill_diagonal(self.mat_p, 0)
         self.v = np.mean(self.mat_p, axis=1)
         Q1, Q3 = np.percentile(self.v, 25), np.percentile(self.v, 75)
         IQR = Q3 - Q1

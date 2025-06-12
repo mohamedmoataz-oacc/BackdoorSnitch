@@ -63,12 +63,12 @@ def split_onnx_model(model: onnx.ModelProto, split_layer_index):
     return model1, model2
 
 def compute_split_layer_index(model):
-    options, num_layers = find_options(model)
+    options, num_nodes = find_options(model)
     if not options: return -1
 
     accepted_range = None
-    if num_layers <= 50: accepted_range = (int(num_layers*0.35)), (int(num_layers*0.55))
-    else: accepted_range = (int(num_layers*0.25)), (int(num_layers*0.45))
+    if num_nodes <= 50: accepted_range = (int(num_nodes*0.35)), (int(num_nodes*0.55))
+    else: accepted_range = (int(num_nodes*0.25)), (int(num_nodes*0.45))
 
     filtered_options = []
     while not filtered_options:

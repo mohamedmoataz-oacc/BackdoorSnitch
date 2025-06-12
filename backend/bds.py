@@ -50,7 +50,7 @@ class BDS(metaclass=Singleton):
             logger.setLevel(logging.INFO)
         else: logger = None
 
-        detectors = config.get("detection_methods")
+        detectors = kwargs.pop('detectors', config.get("detection_methods"))
         self.log_or_print(f"Detectors used: {detectors}", logger)
         results, params = self.analyze_model(model_path, detectors, logger=logger, **kwargs)
         try:
