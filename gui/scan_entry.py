@@ -11,7 +11,9 @@ class ScanEntryWidget(QWidget):
         super().__init__()
         self.backend = backend
         self.model_path = path
-
+        self.strip = False
+        self.strip_params = []
+        
         self.contents_layout = QVBoxLayout(self)
         layout_frame = QFrame()
         layout_frame.setMaximumHeight(500)
@@ -32,6 +34,9 @@ class ScanEntryWidget(QWidget):
 
         label = "<pre><b>Detection Methods used:</b>"
         for method, params in detection_methods_used["params"].items():
+            if method == 'strip':
+                self.strip = True
+                self.strip_params = params
             label += f"<br>\t{method}:"
             for k, v in params.items():
                 label += f"<br>\t\t{k}: {v}"
@@ -97,7 +102,9 @@ class ScanEntryWidget(QWidget):
 
         layout.addWidget(download_btn, alignment=Qt.AlignCenter)
         layout.addWidget(visualize_button, alignment=Qt.AlignCenter)
-        layout.addWidget(scan_button, alignment=Qt.AlignCenter)
+        print()
+        if self.strip:
+            layout.addWidget(scan_button, alignment=Qt.AlignCenter)
 
         self.contents_layout.addWidget(layout_frame)
     
@@ -123,5 +130,12 @@ class ScanEntryWidget(QWidget):
         self.scan.switch_page(index= 0)
         self.scan.mark_button(self.scan.scan_button)
         self.scan.show()
+        print(self.strip_params["mean_entropy"], self.strip_params["std_entropy"], self.strip_params["threshold"])
+        self.scan.scan_page.model_path = self.model_path
+        self.scan.scan_page.strip_params = {"mean_entropy": self.strip_params["mean_entropy"],
+                                            "std_entropy": self.strip_params["std_entropy"], 
+                                            "threshold": self.strip_params["threshold"]}
+        self.scan.scan_page.step2()
+
 
 

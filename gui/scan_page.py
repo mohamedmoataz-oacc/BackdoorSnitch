@@ -20,6 +20,7 @@ class ScanPage(QWidget):
 
         self.model_path = None
         self.data_dir = None
+        self.strip_params = None
 
         self.contents_layout = QVBoxLayout(self)
         self.content = QFrame()
@@ -40,6 +41,7 @@ class ScanPage(QWidget):
         self.contents_layout.addWidget(self.content)
 
     def step1(self):
+        self.strip_params = None
         self.step = QLabel("Step1: Upload Network")
         self.step.setStyleSheet("font-size:25px; padding-top:90px;")
 
@@ -180,14 +182,22 @@ class ScanPage(QWidget):
 
         # Send model and data_dir to backend
         self.backend.add_model(self.model_path)
-        kwargs = {
+        
+
+        if self.strip_params:
+            kwargs = {
+            "model_path": self.model_path,
+            "strip_params": self.strip_params,
+            "detectors": ["strip"],
+            }
+        else: 
+            kwargs = {
             "model_path": self.model_path,
             "strip_params": {"clean_images_dir": self.data_dir}
-        }
-
-        if self.set_params.parameters:
-            kwargs["netcop_params"] = {"optimizer_epochs": self.set_params.parameters[1], "num_IRcs": self.set_params.parameters[0]}
-            print(self.set_params.parameters[1], self.set_params.parameters[0])
+            }
+            if self.set_params.parameters:
+                kwargs["netcop_params"] = {"optimizer_epochs": self.set_params.parameters[1], "num_IRcs": self.set_params.parameters[0]}
+                print(self.set_params.parameters[1], self.set_params.parameters[0])
 
         self.backend_process = Process(
             target=self.backend.analyze,
