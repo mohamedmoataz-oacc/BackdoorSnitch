@@ -1,7 +1,6 @@
 {
     "detection_methods": [
-        "netcop",
-        "strip"
+        "netcop"
     ],
     "models": [
         {

@@ -40,11 +40,11 @@ def poisoned_count_chart(entropy_dict):
     plt.close(fig)
     return temp.name
 
-def free_eagle_plots(mat_p, v):
+def netcop_plots(mat_p, v):
     fig, axs = plt.subplots(2, 1, figsize=(16, 8), gridspec_kw={'height_ratios': [3, 1]})
     axs[0].matshow(mat_p, cmap='viridis')
     axs[1].boxplot(v, vert=False, widths=0.5)
-    axs[0].set_title('FreeEagle Posteriors Matrix')
+    axs[0].set_title('NetCop Posteriors Matrix')
     temp = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
     plt.tight_layout()
     plt.savefig(temp.name)
@@ -125,9 +125,9 @@ def generate_individual_report(model, output_dir):
         elements.append(stats_table)
         elements.append(Spacer(1, 12))
 
-    if 'free_eagle' in results:
-        fe = results['free_eagle'][1]
-        elements.append(Paragraph("Free Eagle Analysis:", styles['SubHeader']))
+    if 'netcop' in results:
+        fe = results['netcop'][1]
+        elements.append(Paragraph("NetCop Analysis:", styles['SubHeader']))
         elements.append(Paragraph("Statistical thresholds and activation patterns are used to identify potential backdoors.", styles['Normal']))
         stats = [
             ['Metric', 'Value'],
@@ -145,8 +145,8 @@ def generate_individual_report(model, output_dir):
         elements.append(table)
         elements.append(Spacer(1, 12))
 
-        free_eagle_matrix_vis = free_eagle_plots(fe['mat_p'], fe['V'])
-        elements.append(Image(free_eagle_matrix_vis, width = 8 * inch, height = 4 * inch))
+        netcop_matrix_vis = netcop_plots(fe['mat_p'], fe['V'])
+        elements.append(Image(netcop_matrix_vis, width = 8 * inch, height = 4 * inch))
         elements.append(Spacer(1, 12))
 
     doc.build(elements)
