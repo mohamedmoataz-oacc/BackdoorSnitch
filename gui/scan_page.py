@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QFrame, QFileDialog, QMessageBox, QTextEdit
+    QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QFrame, QFileDialog, QMessageBox, QTextEdit, QHBoxLayout, QSpacerItem, QSizePolicy
 )
 from PySide6.QtGui import QPixmap, QTextCursor
 from PySide6.QtCore import Qt, QTimer
@@ -31,7 +31,7 @@ class ScanPage(QWidget):
         self.upload_width = self.width() * 0.4
 
         content_margin = (900 - 206 - self.upload_width) // 2
-        self.content_layout.setContentsMargins(content_margin, 0,content_margin , 0)
+        self.content_layout.setContentsMargins(content_margin , 0,content_margin , 0)
         
         self.upload_box = QFrame()
         self.progress_bar = QLabel()
@@ -57,15 +57,16 @@ class ScanPage(QWidget):
 
         # Visualize button (initially hidden)
         self.visualize_button = QPushButton("Visualize Model")
-        self.visualize_button.setFixedHeight(50)
+        self.visualize_button.setFixedHeight(100)
         self.visualize_button.setStyleSheet("""
             QPushButton {
                 background-color: #2E2E2E;
                 color: white;
-                font-size: 16px;
-                font-weight: bold;
+                font-size: 22px;
                 border-radius: 12px;
                 padding: 0 20px;
+                margin-bottom:45px;
+            
             }
             QPushButton:hover {
                 background-color: #3A3A3A;
@@ -73,7 +74,19 @@ class ScanPage(QWidget):
         """)
         self.visualize_button.setVisible(False)
         self.visualize_button.clicked.connect(self.visualize_model)
-        self.content_layout.addWidget(self.visualize_button, alignment=Qt.AlignCenter)
+
+        spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+
+        self.container = QWidget()
+        self.container_layout = QHBoxLayout(self.container)
+        
+
+        self.container_layout.addWidget(self.visualize_button)
+        self.container_layout.addItem(spacer)
+        self.container_layout.addWidget(self.continue_button)
+
+
     
     def visualize_model(self):
         netron.start(self.model_path)
@@ -83,6 +96,7 @@ class ScanPage(QWidget):
         self.progress_bar.setParent(None)
         self.continue_button.setParent(None)
         self.upload_box.setParent(None)
+        self.visualize_button.setParent(None)
 
         self.step = QLabel("Step2: Upload data sample\nfor each output class")
         self.step.setStyleSheet("font-size:25px; padding-top:90px;")
@@ -106,6 +120,8 @@ class ScanPage(QWidget):
         self.progress_bar.setParent(None)
         self.continue_button.setParent(None)
         self.upload_box.setParent(None)
+        self.visualize_button.setParent(None)
+
 
         self.analyze_model()
 
@@ -118,19 +134,20 @@ class ScanPage(QWidget):
         prog = QPixmap("./gui/assets/comp2.png")
         self.progress_bar.setPixmap(prog)
         self.progress_bar.setScaledContents(True)
-        self.progress_bar.setFixedSize(330, 26)
+        self.progress_bar.setFixedSize(320, 22)
 
         self.content_layout.addWidget(self.progress_bar, alignment=Qt.AlignCenter)
 
         # Circular progress bar
         self.logging_box = QTextEdit()
-        self.logging_box.setFixedSize(1000, 500)
+        self.logging_box.setFixedSize(700, 500)
+        self.logging_box.setReadOnly(True)
         # self.logging_box.setLineWrapMode(QTextEdit.NoWrap)
         # Create a layout to add margins
         progress_layout = QVBoxLayout()
-        progress_layout.addStretch(0.3)  # Top margin
+        progress_layout.addStretch(0.1)  # Top margin
         progress_layout.addWidget(self.logging_box, alignment=Qt.AlignLeft)
-        progress_layout.addStretch(0.3)  # Bottom margin
+        progress_layout.addStretch(0.1)  # Bottom margin
         self.content_layout.addLayout(progress_layout)
 
         # Report button (initially hidden)
@@ -159,15 +176,22 @@ class ScanPage(QWidget):
         self.timer.start(100)
     
     def analyze_model(self):
+        self.set_params = self.window()
+
         # Send model and data_dir to backend
         self.backend.add_model(self.model_path)
+        kwargs = {
+            "model_path": self.model_path,
+            "strip_params": {"clean_images_dir": self.data_dir}
+        }
+
+        if self.set_params.parameters:
+            kwargs["netcop_params"] = {"optimizer_epochs": self.set_params.parameters[1], "num_IRcs": self.set_params.parameters[0]}
+            print(self.set_params.parameters[1], self.set_params.parameters[0])
+
         self.backend_process = Process(
             target=self.backend.analyze,
-            kwargs={
-                "model_path": self.model_path,
-                # "netcop_params": {"optimizer_epochs": 10},
-                "strip_params": {"clean_images_dir": self.data_dir}
-            }
+            kwargs=kwargs
         )
         self.backend_process.start()
     
@@ -237,11 +261,12 @@ class ScanPage(QWidget):
             onnx_model = onnx.load(file_path)
             onnx.checker.check_model(onnx_model)  # Validate model
 
-            self.contents_layout.addWidget(self.continue_button, alignment=Qt.AlignRight)
+            self.contents_layout.addStretch()
+            self.contents_layout.addWidget(self.container)
             self.model_path = file_path
             self.visualize_button.setVisible(True)
         except Exception as e:
-            self.continue_button.setParent(None)
+            self.container.setParent(None)
             QMessageBox.critical(self, "Error", f"Invalid ONNX file!\n{str(e)}")
 
     def choose_data_dir(self):
@@ -318,9 +343,9 @@ class ScanPage(QWidget):
         self.continue_button = self.create_button("Continue >")
         self.continue_button.setStyleSheet(
             "background-color: #2ADD24; color:#121212; border-radius:10px;"
-            "font-size:22px;margin-bottom:45px; margin-right:30px;"
+            "font-size:22px;margin-bottom:45px;"
         )
-        self.continue_button.setFixedSize(190, 100)
+        self.continue_button.setFixedSize(150, 100)
 
         # Ensure `continue_button` is properly reconnected
         try:

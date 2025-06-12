@@ -18,6 +18,8 @@ class MainWindow(QWidget):
         super().__init__()
         self.backend = backend
 
+        self.parameters = []
+
         self.setWindowTitle("Backdoor Snitch")
         pixmap = QPixmap('./gui/assets/logo_light.png')
         self.setWindowIcon(QIcon(pixmap))
@@ -128,7 +130,7 @@ class MainWindow(QWidget):
         self.stacked_widget.setCurrentIndex(index)
         
         # Update button styles
-        buttons = [self.scan_button, self.settings_button, self.history_button]
+        buttons = [self.scan_button, self.history_button, self.settings_button]
         for i, button in enumerate(buttons):
             if i == index:
                 self.mark_button(button)
@@ -138,6 +140,10 @@ class MainWindow(QWidget):
                     border-radius: 10px;
                     padding: 5px;
                 """)
+
+
+    def set_params(self, IR, epochs):
+        self.parameters = [IR, epochs]
 
     def create_button(self, button_name):
         button = QPushButton(button_name)

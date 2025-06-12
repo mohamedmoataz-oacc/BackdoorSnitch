@@ -11,6 +11,14 @@
                 "params": {},
                 "results": {}
             }
+        },
+        {
+            "path": "D:/Downloads/cifar10_convnext_tiny_badnet_0_1 (more test data)/cifar10_convnext_tiny_badnet_0_1.onnx",
+            "last_modified": "2025-06-07 23:15:13",
+            "detection_methods_used": {
+                "params": {},
+                "results": {}
+            }
         }
     ]
 }

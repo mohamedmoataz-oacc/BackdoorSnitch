@@ -1,9 +1,10 @@
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QCheckBox, QPushButton, 
-    QFrame, QScrollArea, QSpacerItem, QSizePolicy, QMessageBox
+    QFrame, QScrollArea, QSpacerItem, QSizePolicy, QMessageBox, QHBoxLayout, QLineEdit
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
+from gui.parameter_controls import ParameterControls
 
 
 class SettingsPage(QFrame):
@@ -11,6 +12,7 @@ class SettingsPage(QFrame):
         super().__init__()
         self.config = config
         self.setup_ui()
+        self.parameters = None  # Placeholder for the widget
         
     def setup_ui(self):
         # Main layout
@@ -54,9 +56,14 @@ class SettingsPage(QFrame):
             "NetCop", 
             "Neural trojan detection during validation"
         )
+        self.set_parms = QPushButton("Set Parameters")
+
         self.netcop_check.findChild(QCheckBox).setChecked(
             "netcop" in self.config.settings.get("detection_methods")
         )
+
+        self.netcop_check.findChild(QCheckBox).stateChanged.connect(self.toggle_parameters)
+
         
         self.strip_check = self._create_method_checkbox(
             "STRIP", 
@@ -113,17 +120,19 @@ class SettingsPage(QFrame):
                 font-size: 16px;
                 font-weight: bold;
                 margin-bottom: 5px;
+
             }
             QCheckBox::indicator {
                 width: 22px;
                 height: 22px;
             }
             QCheckBox::indicator:checked {
-                background-color: #4a6fa5;
-                border: 2px solid #3a5a8f;
+                image: url(./gui/assets/check.png);
+                border: 2px solid #00BA00;
                 border-radius: 4px;
             }
             QCheckBox::indicator:unchecked {
+                image: none;
                 border: 2px solid #cccccc;
                 border-radius: 4px;
             }
@@ -131,31 +140,56 @@ class SettingsPage(QFrame):
     
     def _create_method_checkbox(self, title, description):
         """Create a method selection widget with proper spacing"""
-        container = QFrame()
-        container.setStyleSheet("background-color: transparent;")
-        layout = QVBoxLayout(container)
-        layout.setContentsMargins(0, 0, 0, 15)  # Bottom margin for spacing
-        layout.setSpacing(8)  # Space between checkbox and description
+        self.container = QFrame()
+        self.container.setStyleSheet("background-color: transparent;")
+        self.layout = QVBoxLayout(self.container)
+        self.layout.setContentsMargins(0, 0, 0, 15)  # Bottom margin for spacing
+        self.layout.setSpacing(8)  # Space between checkbox and description
         
         # Checkbox
-        checkbox = QCheckBox(title)
-        checkbox.setStyleSheet("font-weight: bold;")
+        self.checkbox = QCheckBox(title)
+        self.checkbox.setStyleSheet("font-weight: bold;")
+        self.checkbox.setCursor(Qt.PointingHandCursor)
+
+
         
         # Description
-        desc_label = QLabel(description)
-        desc_label.setStyleSheet("""
+        self.desc_label = QLabel(description)
+        self.desc_label.setStyleSheet("""
             color: #666666; 
             font-size: 14px;
             margin-left: 34px;  # Align with checkbox text
             margin-top: -5px;
         """)
-        desc_label.setWordWrap(True)
+        self.desc_label.setWordWrap(True)
         
-        layout.addWidget(checkbox)
-        layout.addWidget(desc_label)
+        self.layout.addWidget(self.checkbox)
+        self.layout.addWidget(self.desc_label)
+        if title == "NetCop":
+            self.parameter_controls = ParameterControls()
+            self.layout.addWidget(self.parameter_controls)
+            self.parameter_controls.hide()
+
         
-        return container
+        return self.container
     
+
+    def toggle_parameters(self):
+        if self.netcop_check.findChild(QCheckBox).isChecked():
+            self.parameter_controls.show()
+        else:
+            self.parameter_controls.hide()
+
+    def create_input(self, title):
+        input_container_frame = QFrame()
+        input_container = QHBoxLayout(input_container_frame)
+        label = QLabel(title)
+        input_field = QLineEdit()
+        input_container.addWidget(label)
+        input_container.addWidget(input_field)
+
+        return input_container_frame
+
     def save_settings(self):
         """Collect and save the selected methods"""
         selected_methods = []

@@ -1,6 +1,8 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QFrame, QFileDialog, QMessageBox
+from PySide6.QtGui import QGuiApplication
 from backend.settings import config
 from PySide6.QtCore import Qt
+from backend import bds
 import netron
 
 
@@ -13,6 +15,9 @@ class ScanEntryWidget(QWidget):
         self.contents_layout = QVBoxLayout(self)
         layout_frame = QFrame()
         layout_frame.setMaximumHeight(500)
+        screen_geometry = QGuiApplication.primaryScreen().availableGeometry()
+
+        layout_frame.setMaximumWidth(screen_geometry.width()-250)
         layout_frame.setStyleSheet("""
             background-color: #f9f9f9;
             border: 1px solid #ccc;
@@ -71,8 +76,29 @@ class ScanEntryWidget(QWidget):
         """)
         visualize_button.clicked.connect(self.visualize_model)
 
+        # Visualize button (initially hidden)
+        scan_button = QPushButton("Scan Model")
+        scan_button.setCursor(Qt.PointingHandCursor)
+        scan_button.setFixedWidth(210)
+        scan_button.setStyleSheet("""
+            QPushButton {
+                background-color: #20a31c;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-weight: bold;
+                padding: 8px 16px;
+            }
+            QPushButton:hover {
+                background-color: #1a7817;
+            }
+        """)
+        scan_button.clicked.connect(self.scan_model)
+
         layout.addWidget(download_btn, alignment=Qt.AlignCenter)
         layout.addWidget(visualize_button, alignment=Qt.AlignCenter)
+        layout.addWidget(scan_button, alignment=Qt.AlignCenter)
+
         self.contents_layout.addWidget(layout_frame)
     
     def visualize_model(self):
@@ -91,3 +117,11 @@ class ScanEntryWidget(QWidget):
                 self, "Error",
                 f"Failed to generate the report!"
             )
+
+    def scan_model(self):
+        self.scan = self.window()
+        self.scan.switch_page(index= 0)
+        self.scan.mark_button(self.scan.scan_button)
+        self.scan.show()
+
+
