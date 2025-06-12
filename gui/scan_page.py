@@ -223,7 +223,7 @@ class ScanPage(QWidget):
         if not self.backend_process.is_alive():
             config.load()
             self.download_button.setVisible(True)
-            self.history_page.show_history(config.get_model(self.model_path))
+            self.history_page.show_history(config.settings["models"])
             self.timer.stop()
         else:
             while True:

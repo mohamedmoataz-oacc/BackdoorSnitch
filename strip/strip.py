@@ -12,7 +12,7 @@ from detection_method import BackdoorDetector, ONNXModelWrapper
 # STRIP Detector class
 class STRIPDetector(BackdoorDetector):
     def __init__(
-        self, model_path, clean_images_dir, k=1.0, image_size: tuple = None,
+        self, model_path, clean_images_dir=None, k=1.0, image_size: tuple = None,
         logger=None, mean_entropy=None, std_entropy=None, threshold=None
     ):
         """
@@ -41,19 +41,20 @@ class STRIPDetector(BackdoorDetector):
         if image_size is not None: image_transforms.insert(0, transforms.Resize(image_size))
         self.transform = transforms.Compose(image_transforms)
 
-        self.clean_image_tensors = [
-            self.load_and_preprocess(path)
-            for path in (
-                glob.glob(os.path.join(self.clean_images_dir, '*.jpg')) +
-                glob.glob(os.path.join(self.clean_images_dir, '*.png'))
-            )
-        ]
 
         if mean_entropy is not None and std_entropy is not None and threshold is not None:
             self.mean_entropy = mean_entropy
             self.std_entropy = std_entropy
             self.threshold = threshold
         else:
+            self.clean_image_tensors = [
+                self.load_and_preprocess(path)
+                for path in (
+                    glob.glob(os.path.join(self.clean_images_dir, '*.jpg')) +
+                    glob.glob(os.path.join(self.clean_images_dir, '*.png'))
+                )
+            ]
+            
             # Compute entropy statistics
             entropies = []
             for clean_tensor in tqdm(self.clean_image_tensors, desc="[*] Computing clean entropy stats for thresholding"):
