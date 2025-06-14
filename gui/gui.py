@@ -29,7 +29,7 @@ class MainWindow(QWidget):
         screen_width = screen_geometry.width()
         screen_height = screen_geometry.height()
 
-        window_width = 900
+        window_width = 800
         window_height = screen_geometry.height() - 55
 
         # To center the window

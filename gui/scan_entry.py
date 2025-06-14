@@ -37,12 +37,18 @@ class ScanEntryWidget(QWidget):
             if method == 'strip':
                 self.strip = True
                 self.strip_params = params
+                layout_frame.setMaximumHeight(700)
+
+                
             label += f"<br>\t{method}:"
             for k, v in params.items():
                 label += f"<br>\t\t{k}: {v}"
         label += "</pre>"
 
-        layout.addWidget(QLabel(label))
+        label_w = QLabel(label)
+
+
+        layout.addWidget(label_w)
 
         download_btn = QPushButton("Download Report")
         download_btn.setCursor(Qt.PointingHandCursor)
@@ -135,7 +141,7 @@ class ScanEntryWidget(QWidget):
         self.scan.scan_page.strip_params = {"mean_entropy": self.strip_params["mean_entropy"],
                                             "std_entropy": self.strip_params["std_entropy"], 
                                             "threshold": self.strip_params["threshold"]}
-        self.scan.scan_page.step2()
+        self.scan.scan_page.step2_strip()
 
 
 

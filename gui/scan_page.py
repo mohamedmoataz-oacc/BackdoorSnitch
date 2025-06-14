@@ -36,6 +36,9 @@ class ScanPage(QWidget):
         
         self.upload_box = QFrame()
         self.progress_bar = QLabel()
+        self.logging_box = QTextEdit()
+        self.download_button = QPushButton("Download Report")
+        self.back_button = QPushButton("< Back")
 
         self.step1()
         self.contents_layout.addWidget(self.content)
@@ -83,7 +86,6 @@ class ScanPage(QWidget):
         self.container = QWidget()
         self.container_layout = QHBoxLayout(self.container)
         
-
         self.container_layout.addWidget(self.visualize_button)
         self.container_layout.addItem(spacer)
         self.container_layout.addWidget(self.continue_button)
@@ -116,7 +118,38 @@ class ScanPage(QWidget):
         # upload box 
         self.create_input('data directory')
 
+    def step2_strip(self):
+        self.step.setParent(None)
+        self.progress_bar.setParent(None)
+        self.logging_box.setParent(None)
+        self.download_button.setParent(None)
+        self.back_button.setParent(None)
+        self.step.setParent(None)
+        self.progress_bar.setParent(None)
+        self.continue_button.setParent(None)
+        self.upload_box.setParent(None)
+        self.visualize_button.setParent(None)
+
+        self.step = QLabel("Step2: Upload test data")
+        self.step.setStyleSheet("font-size:25px; padding-top:90px;")
+
+        self.content_layout.addWidget(self.step, alignment=Qt.AlignCenter)
+
+        self.progress_bar = QLabel()
+        prog = QPixmap("./gui/assets/comp1.png")
+        self.progress_bar.setPixmap(prog)
+        self.progress_bar.setScaledContents(True)
+        self.progress_bar.setFixedSize(330, 26)
+
+        self.content_layout.addWidget(self.progress_bar, alignment=Qt.AlignCenter)
+
+        # upload box 
+        self.create_input('image or \ndirectory')
+
     def step3(self):
+
+        content_margin = (self.width() - 206 - self.width()*0.7) // 2
+        self.content_layout.setContentsMargins(content_margin, 0, content_margin , 0)
         # Clear previous widgets
         self.step.setParent(None)
         self.progress_bar.setParent(None)
@@ -141,19 +174,16 @@ class ScanPage(QWidget):
         self.content_layout.addWidget(self.progress_bar, alignment=Qt.AlignCenter)
 
         # Circular progress bar
-        self.logging_box = QTextEdit()
-        self.logging_box.setFixedSize(700, 500)
+        
+        self.logging_box.setFixedSize(self.width()* 0.8, 420)
+
         self.logging_box.setReadOnly(True)
         # self.logging_box.setLineWrapMode(QTextEdit.NoWrap)
         # Create a layout to add margins
-        progress_layout = QVBoxLayout()
-        progress_layout.addStretch(0.1)  # Top margin
-        progress_layout.addWidget(self.logging_box, alignment=Qt.AlignLeft)
-        progress_layout.addStretch(0.1)  # Bottom margin
-        self.content_layout.addLayout(progress_layout)
+
+        self.content_layout.addWidget(self.logging_box, alignment=Qt.AlignCenter)
 
         # Report button (initially hidden)
-        self.download_button = QPushButton("Download Report")
         self.download_button.setFixedHeight(50)
         self.download_button.setStyleSheet("""
             QPushButton {
@@ -172,11 +202,42 @@ class ScanPage(QWidget):
         self.download_button.clicked.connect(self.download_report)
         self.content_layout.addWidget(self.download_button, alignment=Qt.AlignCenter)
 
+        #back button
+        self.back_button.setFixedHeight(50)
+        self.back_button.setStyleSheet("""
+            QPushButton {
+                background-color: #575757;
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                border-radius: 12px;
+                padding: 0 20px;
+            }
+            QPushButton:hover {
+                background-color: #3A3A3A;
+            }
+        """)
+        self.back_button.setVisible(False)
+        self.back_button.clicked.connect(self.back_scan)
+        self.content_layout.addWidget(self.back_button, alignment=Qt.AlignCenter)
+
         # Progress logic
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_progress)
         self.timer.start(100)
-    
+
+        
+    def back_scan(self):
+        self.step.setParent(None)
+        self.progress_bar.setParent(None)
+        self.logging_box.setParent(None)
+        self.download_button.setParent(None)
+        self.back_button.setParent(None)
+        content_margin = (self.width() - 206 - self.upload_width) // 2
+        self.content_layout.setContentsMargins(content_margin+80, 0, content_margin , 0)
+        self.step1()
+
+
     def analyze_model(self):
         self.set_params = self.window()
 
@@ -189,6 +250,7 @@ class ScanPage(QWidget):
             "model_path": self.model_path,
             "strip_params": self.strip_params,
             "detectors": ["strip"],
+            "strip_args": self.data_dir
             }
         else: 
             kwargs = {
@@ -223,6 +285,10 @@ class ScanPage(QWidget):
         if not self.backend_process.is_alive():
             config.load()
             self.download_button.setVisible(True)
+            self.back_button.setVisible(True)
+            prog = QPixmap("./gui/assets/comp3.png")
+            self.progress_bar.setPixmap(prog)
+
             self.history_page.show_history(config.settings["models"])
             self.timer.stop()
         else:
@@ -250,7 +316,13 @@ class ScanPage(QWidget):
             content_margin = (self.width() - 206 - 650) // 2
             self.progress_bar.setFixedSize(380, 28)
 
-        self.content_layout.setContentsMargins(content_margin, 0, 0 , 0)
+        self.logging_box.setFixedWidth(self.width()*0.7)
+
+        if "step3:" in self.step.text().lower() :
+            content_margin = (self.width() - 206 - self.width()*0.7) // 2
+            self.content_layout.setContentsMargins(content_margin, 0, content_margin , 0)
+        else:
+            self.content_layout.setContentsMargins(content_margin+80, 0, content_margin , 0)
 
         super().resizeEvent(event)
 
@@ -287,6 +359,17 @@ class ScanPage(QWidget):
         
         self.contents_layout.addWidget(self.continue_button, alignment=Qt.AlignRight)
         self.data_dir = dir_path
+
+    def choose_image_dir(self):
+        images_path, _ = QFileDialog.getOpenFileNames(
+            None, "Select Images", "", "Image Files (*.png *.jpg *.bmp)"
+        )
+        if not images_path:
+            return  # Nothing selected
+
+        self.data_dir = images_path
+
+        self.contents_layout.addWidget(self.continue_button, alignment=Qt.AlignRight)
 
     def create_input(self, type: str):
         # Clear existing widgets from the upload box before reusing it
@@ -344,8 +427,11 @@ class ScanPage(QWidget):
         # Assign the correct upload function based on file type
         if type.lower() == "data directory":
             self.upload_button.clicked.connect(self.choose_data_dir)
-        else:
+        elif type.lower() == "onnx file":
             self.upload_button.clicked.connect(self.upload_onnx_file)
+        else:
+            self.upload_button.clicked.connect(self.choose_image_dir)
+
 
         upload_layout.addWidget(self.upload_button, alignment=Qt.AlignCenter)
 
@@ -363,7 +449,7 @@ class ScanPage(QWidget):
         except TypeError:
             pass  # No previous connection, safe to proceed
 
-        if type.lower() == "data directory" or "strip" not in config.get_detectors_used():
+        if type.lower() == "data directory" or type.lower() == "image or \ndirectory" or"strip" not in config.get_detectors_used():
             self.continue_button.clicked.connect(self.step3)
         else:
             self.continue_button.clicked.connect(self.step2)
