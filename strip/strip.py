@@ -41,25 +41,36 @@ class STRIPDetector(BackdoorDetector):
         if image_size is not None: image_transforms.insert(0, transforms.Resize(image_size))
         self.transform = transforms.Compose(image_transforms)
 
+        self.clean_image_tensors = [
+            self.load_and_preprocess(path)
+            for path in (
+                glob.glob(os.path.join(self.clean_images_dir, '*.jpg')) +
+                glob.glob(os.path.join(self.clean_images_dir, '*.png'))
+            )
+        ]
 
         if mean_entropy is not None and std_entropy is not None and threshold is not None:
             self.mean_entropy = mean_entropy
             self.std_entropy = std_entropy
             self.threshold = threshold
         else:
-            self.clean_image_tensors = [
-                self.load_and_preprocess(path)
-                for path in (
-                    glob.glob(os.path.join(self.clean_images_dir, '*.jpg')) +
-                    glob.glob(os.path.join(self.clean_images_dir, '*.png'))
-                )
-            ]
+            LOG_INTERVAL = len(self.clean_image_tensors) // 10
+            progress_bar = tqdm(
+                self.clean_image_tensors, file=open(os.devnull, 'w') if self.logger else None,
+                desc="[*] Computing clean entropy stats for thresholding"
+            )
+            last_printed = ''
             
             # Compute entropy statistics
             entropies = []
-            for clean_tensor in tqdm(self.clean_image_tensors, desc="[*] Computing clean entropy stats for thresholding"):
+            for clean_tensor in progress_bar:
                 e = self.compute_entropy(clean_tensor.unsqueeze(0))
                 entropies.append(e)
+
+                if self.logger and progress_bar.n % LOG_INTERVAL == 0:
+                    if str(progress_bar) != last_printed:
+                        self.log_or_print(str(progress_bar))
+                        last_printed = str(progress_bar)
 
             self.mean_entropy = np.mean(entropies)
             self.std_entropy = np.std(entropies)
@@ -123,14 +134,26 @@ class STRIPDetector(BackdoorDetector):
             with the computed entropy.
         """
 
+        LOG_INTERVAL = len(test_img_paths) // 10
+        progress_bar = tqdm(
+            test_img_paths, file=open(os.devnull, 'w') if self.logger else None,
+            desc="STRIP - Detecting trojans..."
+        )
+        last_printed = ''
+
         results = {}
         trojaned = False
-        for test_img_path in (test_img_paths if len(test_img_paths) == 0 else tqdm(test_img_paths, desc="[*] Detecting poisoned images")):
+        for test_img_path in progress_bar:
             image = Image.open(test_img_path).convert('RGB')
             test_img_tensor = self.transform(image).unsqueeze(0)
             avg_entropy = self.compute_entropy(test_img_tensor)
             is_trojan = round(avg_entropy, 4) <= round(self.threshold, 4)
             results.update({test_img_path: {"entropy": round(avg_entropy, 4), "poisoned": bool(is_trojan)}})
             if is_trojan: trojaned = True
+
+            if self.logger and progress_bar.n % LOG_INTERVAL == 0:
+                if str(progress_bar) != last_printed:
+                    self.log_or_print(str(progress_bar))
+                    last_printed = str(progress_bar)
         
         return trojaned, results

@@ -147,7 +147,6 @@ class ScanPage(QWidget):
         self.create_input('image or \ndirectory')
 
     def step3(self):
-
         content_margin = (self.width() - 206 - self.width()*0.7) // 2
         self.content_layout.setContentsMargins(content_margin, 0, content_margin , 0)
         # Clear previous widgets
@@ -174,11 +173,11 @@ class ScanPage(QWidget):
         self.content_layout.addWidget(self.progress_bar, alignment=Qt.AlignCenter)
 
         # Circular progress bar
-        
         self.logging_box.setFixedSize(self.width()* 0.8, 420)
 
+        self.logging_box.setReadOnly(False)
+        self.logging_box.clear()
         self.logging_box.setReadOnly(True)
-        # self.logging_box.setLineWrapMode(QTextEdit.NoWrap)
         # Create a layout to add margins
 
         self.content_layout.addWidget(self.logging_box, alignment=Qt.AlignCenter)
@@ -237,25 +236,23 @@ class ScanPage(QWidget):
         self.content_layout.setContentsMargins(content_margin+80, 0, content_margin , 0)
         self.step1()
 
-
     def analyze_model(self):
         self.set_params = self.window()
 
         # Send model and data_dir to backend
         self.backend.add_model(self.model_path)
-        
 
         if self.strip_params:
             kwargs = {
-            "model_path": self.model_path,
-            "strip_params": self.strip_params,
-            "detectors": ["strip"],
-            "strip_args": self.data_dir
+                "model_path": self.model_path,
+                "strip_params": self.strip_params,
+                "detectors": ["strip"],
+                "strip_args": self.data_dir
             }
-        else: 
+        else:
             kwargs = {
-            "model_path": self.model_path,
-            "strip_params": {"clean_images_dir": self.data_dir}
+                "model_path": self.model_path,
+                "strip_params": {"clean_images_dir": self.data_dir}
             }
             if self.set_params.parameters:
                 kwargs["netcop_params"] = {"optimizer_epochs": self.set_params.parameters[1], "num_IRcs": self.set_params.parameters[0]}
@@ -368,7 +365,6 @@ class ScanPage(QWidget):
             return  # Nothing selected
 
         self.data_dir = images_path
-
         self.contents_layout.addWidget(self.continue_button, alignment=Qt.AlignRight)
 
     def create_input(self, type: str):

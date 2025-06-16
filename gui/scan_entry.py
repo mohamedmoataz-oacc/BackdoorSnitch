@@ -138,10 +138,10 @@ class ScanEntryWidget(QWidget):
         self.scan.show()
         print(self.strip_params["mean_entropy"], self.strip_params["std_entropy"], self.strip_params["threshold"])
         self.scan.scan_page.model_path = self.model_path
-        self.scan.scan_page.strip_params = {"mean_entropy": self.strip_params["mean_entropy"],
-                                            "std_entropy": self.strip_params["std_entropy"], 
-                                            "threshold": self.strip_params["threshold"]}
+        self.scan.scan_page.strip_params = {
+            "mean_entropy": self.strip_params["mean_entropy"],
+            "std_entropy": self.strip_params["std_entropy"], 
+            "threshold": self.strip_params["threshold"],
+            "clean_images_dir": self.strip_params["clean_images_dir"]
+        }
         self.scan.scan_page.step2_strip()
-
-
-
