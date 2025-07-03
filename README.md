@@ -11,3 +11,10 @@ We’ve developed the first generalizable, data-free, and robust software for de
 It’s designed to be:  
 - Easy to use, with no need for security expertise or advanced AI knowledge.  
 - Computationally efficient, and able to run on devices with limited processing power.  
+
+<video autoplay loop muted playsinline width="600">
+  <source src="https://github.com/user-attachments/assets/320e020d-2523-4502-847b-6545a66ccef5" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+
