@@ -1,4 +1,4 @@
-# Backdoor Snitch
+<img src="logo.png" alt="Project Logo" width="200"/> # Backdoor Snitch
 Have you heard about neural trojans or neural backdoors?
 Imagine this: what if an attacker could unlock your phone using his face, without generating any suspicious traffic?<br> Or what if he could make a self-driving car misclassify a stop sign as a speed limit of 200 km/h without ever accessing the car or its network?
 
